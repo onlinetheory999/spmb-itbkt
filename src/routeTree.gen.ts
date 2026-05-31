@@ -9,38 +9,210 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
+import { Route as RegisterRouteImport } from './routes/register'
+import { Route as LoginRouteImport } from './routes/login'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedSiswaRouteImport } from './routes/_authenticated/siswa'
+import { Route as AuthenticatedSiswaIndexRouteImport } from './routes/_authenticated/siswa.index'
+import { Route as AuthenticatedSiswaPembayaranRouteImport } from './routes/_authenticated/siswa.pembayaran'
+import { Route as AuthenticatedSiswaKartuRouteImport } from './routes/_authenticated/siswa.kartu'
+import { Route as AuthenticatedSiswaBiodataRouteImport } from './routes/_authenticated/siswa.biodata'
+import { Route as AuthenticatedSiswaBerkasRouteImport } from './routes/_authenticated/siswa.berkas'
 
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RegisterRoute = RegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoginRoute = LoginRouteImport.update({
+  id: '/login',
+  path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRoute = AuthenticatedRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedSiswaRoute = AuthenticatedSiswaRouteImport.update({
+  id: '/siswa',
+  path: '/siswa',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
+const AuthenticatedSiswaIndexRoute = AuthenticatedSiswaIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedSiswaRoute,
+} as any)
+const AuthenticatedSiswaPembayaranRoute =
+  AuthenticatedSiswaPembayaranRouteImport.update({
+    id: '/pembayaran',
+    path: '/pembayaran',
+    getParentRoute: () => AuthenticatedSiswaRoute,
+  } as any)
+const AuthenticatedSiswaKartuRoute = AuthenticatedSiswaKartuRouteImport.update({
+  id: '/kartu',
+  path: '/kartu',
+  getParentRoute: () => AuthenticatedSiswaRoute,
+} as any)
+const AuthenticatedSiswaBiodataRoute =
+  AuthenticatedSiswaBiodataRouteImport.update({
+    id: '/biodata',
+    path: '/biodata',
+    getParentRoute: () => AuthenticatedSiswaRoute,
+  } as any)
+const AuthenticatedSiswaBerkasRoute =
+  AuthenticatedSiswaBerkasRouteImport.update({
+    id: '/berkas',
+    path: '/berkas',
+    getParentRoute: () => AuthenticatedSiswaRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/siswa': typeof AuthenticatedSiswaRouteWithChildren
+  '/siswa/berkas': typeof AuthenticatedSiswaBerkasRoute
+  '/siswa/biodata': typeof AuthenticatedSiswaBiodataRoute
+  '/siswa/kartu': typeof AuthenticatedSiswaKartuRoute
+  '/siswa/pembayaran': typeof AuthenticatedSiswaPembayaranRoute
+  '/siswa/': typeof AuthenticatedSiswaIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/siswa/berkas': typeof AuthenticatedSiswaBerkasRoute
+  '/siswa/biodata': typeof AuthenticatedSiswaBiodataRoute
+  '/siswa/kartu': typeof AuthenticatedSiswaKartuRoute
+  '/siswa/pembayaran': typeof AuthenticatedSiswaPembayaranRoute
+  '/siswa': typeof AuthenticatedSiswaIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
+  '/login': typeof LoginRoute
+  '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/siswa': typeof AuthenticatedSiswaRouteWithChildren
+  '/_authenticated/siswa/berkas': typeof AuthenticatedSiswaBerkasRoute
+  '/_authenticated/siswa/biodata': typeof AuthenticatedSiswaBiodataRoute
+  '/_authenticated/siswa/kartu': typeof AuthenticatedSiswaKartuRoute
+  '/_authenticated/siswa/pembayaran': typeof AuthenticatedSiswaPembayaranRoute
+  '/_authenticated/siswa/': typeof AuthenticatedSiswaIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/siswa'
+    | '/siswa/berkas'
+    | '/siswa/biodata'
+    | '/siswa/kartu'
+    | '/siswa/pembayaran'
+    | '/siswa/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/siswa/berkas'
+    | '/siswa/biodata'
+    | '/siswa/kartu'
+    | '/siswa/pembayaran'
+    | '/siswa'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/forgot-password'
+    | '/login'
+    | '/register'
+    | '/reset-password'
+    | '/_authenticated/siswa'
+    | '/_authenticated/siswa/berkas'
+    | '/_authenticated/siswa/biodata'
+    | '/_authenticated/siswa/kartu'
+    | '/_authenticated/siswa/pembayaran'
+    | '/_authenticated/siswa/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
+  LoginRoute: typeof LoginRoute
+  RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/register': {
+      id: '/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/login': {
+      id: '/login'
+      path: '/login'
+      fullPath: '/login'
+      preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +220,90 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/siswa': {
+      id: '/_authenticated/siswa'
+      path: '/siswa'
+      fullPath: '/siswa'
+      preLoaderRoute: typeof AuthenticatedSiswaRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
+    '/_authenticated/siswa/': {
+      id: '/_authenticated/siswa/'
+      path: '/'
+      fullPath: '/siswa/'
+      preLoaderRoute: typeof AuthenticatedSiswaIndexRouteImport
+      parentRoute: typeof AuthenticatedSiswaRoute
+    }
+    '/_authenticated/siswa/pembayaran': {
+      id: '/_authenticated/siswa/pembayaran'
+      path: '/pembayaran'
+      fullPath: '/siswa/pembayaran'
+      preLoaderRoute: typeof AuthenticatedSiswaPembayaranRouteImport
+      parentRoute: typeof AuthenticatedSiswaRoute
+    }
+    '/_authenticated/siswa/kartu': {
+      id: '/_authenticated/siswa/kartu'
+      path: '/kartu'
+      fullPath: '/siswa/kartu'
+      preLoaderRoute: typeof AuthenticatedSiswaKartuRouteImport
+      parentRoute: typeof AuthenticatedSiswaRoute
+    }
+    '/_authenticated/siswa/biodata': {
+      id: '/_authenticated/siswa/biodata'
+      path: '/biodata'
+      fullPath: '/siswa/biodata'
+      preLoaderRoute: typeof AuthenticatedSiswaBiodataRouteImport
+      parentRoute: typeof AuthenticatedSiswaRoute
+    }
+    '/_authenticated/siswa/berkas': {
+      id: '/_authenticated/siswa/berkas'
+      path: '/berkas'
+      fullPath: '/siswa/berkas'
+      preLoaderRoute: typeof AuthenticatedSiswaBerkasRouteImport
+      parentRoute: typeof AuthenticatedSiswaRoute
+    }
   }
 }
 
+interface AuthenticatedSiswaRouteChildren {
+  AuthenticatedSiswaBerkasRoute: typeof AuthenticatedSiswaBerkasRoute
+  AuthenticatedSiswaBiodataRoute: typeof AuthenticatedSiswaBiodataRoute
+  AuthenticatedSiswaKartuRoute: typeof AuthenticatedSiswaKartuRoute
+  AuthenticatedSiswaPembayaranRoute: typeof AuthenticatedSiswaPembayaranRoute
+  AuthenticatedSiswaIndexRoute: typeof AuthenticatedSiswaIndexRoute
+}
+
+const AuthenticatedSiswaRouteChildren: AuthenticatedSiswaRouteChildren = {
+  AuthenticatedSiswaBerkasRoute: AuthenticatedSiswaBerkasRoute,
+  AuthenticatedSiswaBiodataRoute: AuthenticatedSiswaBiodataRoute,
+  AuthenticatedSiswaKartuRoute: AuthenticatedSiswaKartuRoute,
+  AuthenticatedSiswaPembayaranRoute: AuthenticatedSiswaPembayaranRoute,
+  AuthenticatedSiswaIndexRoute: AuthenticatedSiswaIndexRoute,
+}
+
+const AuthenticatedSiswaRouteWithChildren =
+  AuthenticatedSiswaRoute._addFileChildren(AuthenticatedSiswaRouteChildren)
+
+interface AuthenticatedRouteChildren {
+  AuthenticatedSiswaRoute: typeof AuthenticatedSiswaRouteWithChildren
+}
+
+const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedSiswaRoute: AuthenticatedSiswaRouteWithChildren,
+}
+
+const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
+  AuthenticatedRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  ForgotPasswordRoute: ForgotPasswordRoute,
+  LoginRoute: LoginRoute,
+  RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
