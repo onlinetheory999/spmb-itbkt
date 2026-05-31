@@ -11,16 +11,28 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as PengumumanRouteImport } from './routes/pengumuman'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as JadwalRouteImport } from './routes/jadwal'
+import { Route as InformasiRouteImport } from './routes/informasi'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedSiswaRouteImport } from './routes/_authenticated/siswa'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedSiswaIndexRouteImport } from './routes/_authenticated/siswa.index'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AuthenticatedSiswaPembayaranRouteImport } from './routes/_authenticated/siswa.pembayaran'
 import { Route as AuthenticatedSiswaKartuRouteImport } from './routes/_authenticated/siswa.kartu'
 import { Route as AuthenticatedSiswaBiodataRouteImport } from './routes/_authenticated/siswa.biodata'
 import { Route as AuthenticatedSiswaBerkasRouteImport } from './routes/_authenticated/siswa.berkas'
+import { Route as AuthenticatedAdminSiswaRouteImport } from './routes/_authenticated/admin.siswa'
+import { Route as AuthenticatedAdminPengumumanRouteImport } from './routes/_authenticated/admin.pengumuman'
+import { Route as AuthenticatedAdminPengaturanRouteImport } from './routes/_authenticated/admin.pengaturan'
+import { Route as AuthenticatedAdminPembayaranRouteImport } from './routes/_authenticated/admin.pembayaran'
+import { Route as AuthenticatedAdminJenjangRouteImport } from './routes/_authenticated/admin.jenjang'
+import { Route as AuthenticatedAdminJadwalRouteImport } from './routes/_authenticated/admin.jadwal'
+import { Route as AuthenticatedAdminHeroRouteImport } from './routes/_authenticated/admin.hero'
 
 const ResetPasswordRoute = ResetPasswordRouteImport.update({
   id: '/reset-password',
@@ -32,9 +44,24 @@ const RegisterRoute = RegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PengumumanRoute = PengumumanRouteImport.update({
+  id: '/pengumuman',
+  path: '/pengumuman',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JadwalRoute = JadwalRouteImport.update({
+  id: '/jadwal',
+  path: '/jadwal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InformasiRoute = InformasiRouteImport.update({
+  id: '/informasi',
+  path: '/informasi',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -56,10 +83,20 @@ const AuthenticatedSiswaRoute = AuthenticatedSiswaRouteImport.update({
   path: '/siswa',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 const AuthenticatedSiswaIndexRoute = AuthenticatedSiswaIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthenticatedSiswaRoute,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedAdminRoute,
 } as any)
 const AuthenticatedSiswaPembayaranRoute =
   AuthenticatedSiswaPembayaranRouteImport.update({
@@ -84,30 +121,93 @@ const AuthenticatedSiswaBerkasRoute =
     path: '/berkas',
     getParentRoute: () => AuthenticatedSiswaRoute,
   } as any)
+const AuthenticatedAdminSiswaRoute = AuthenticatedAdminSiswaRouteImport.update({
+  id: '/siswa',
+  path: '/siswa',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
+const AuthenticatedAdminPengumumanRoute =
+  AuthenticatedAdminPengumumanRouteImport.update({
+    id: '/pengumuman',
+    path: '/pengumuman',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminPengaturanRoute =
+  AuthenticatedAdminPengaturanRouteImport.update({
+    id: '/pengaturan',
+    path: '/pengaturan',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminPembayaranRoute =
+  AuthenticatedAdminPembayaranRouteImport.update({
+    id: '/pembayaran',
+    path: '/pembayaran',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminJenjangRoute =
+  AuthenticatedAdminJenjangRouteImport.update({
+    id: '/jenjang',
+    path: '/jenjang',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminJadwalRoute =
+  AuthenticatedAdminJadwalRouteImport.update({
+    id: '/jadwal',
+    path: '/jadwal',
+    getParentRoute: () => AuthenticatedAdminRoute,
+  } as any)
+const AuthenticatedAdminHeroRoute = AuthenticatedAdminHeroRouteImport.update({
+  id: '/hero',
+  path: '/hero',
+  getParentRoute: () => AuthenticatedAdminRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/informasi': typeof InformasiRoute
+  '/jadwal': typeof JadwalRoute
   '/login': typeof LoginRoute
+  '/pengumuman': typeof PengumumanRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/admin': typeof AuthenticatedAdminRouteWithChildren
   '/siswa': typeof AuthenticatedSiswaRouteWithChildren
+  '/admin/hero': typeof AuthenticatedAdminHeroRoute
+  '/admin/jadwal': typeof AuthenticatedAdminJadwalRoute
+  '/admin/jenjang': typeof AuthenticatedAdminJenjangRoute
+  '/admin/pembayaran': typeof AuthenticatedAdminPembayaranRoute
+  '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
+  '/admin/pengumuman': typeof AuthenticatedAdminPengumumanRoute
+  '/admin/siswa': typeof AuthenticatedAdminSiswaRoute
   '/siswa/berkas': typeof AuthenticatedSiswaBerkasRoute
   '/siswa/biodata': typeof AuthenticatedSiswaBiodataRoute
   '/siswa/kartu': typeof AuthenticatedSiswaKartuRoute
   '/siswa/pembayaran': typeof AuthenticatedSiswaPembayaranRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
   '/siswa/': typeof AuthenticatedSiswaIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/informasi': typeof InformasiRoute
+  '/jadwal': typeof JadwalRoute
   '/login': typeof LoginRoute
+  '/pengumuman': typeof PengumumanRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/admin/hero': typeof AuthenticatedAdminHeroRoute
+  '/admin/jadwal': typeof AuthenticatedAdminJadwalRoute
+  '/admin/jenjang': typeof AuthenticatedAdminJenjangRoute
+  '/admin/pembayaran': typeof AuthenticatedAdminPembayaranRoute
+  '/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
+  '/admin/pengumuman': typeof AuthenticatedAdminPengumumanRoute
+  '/admin/siswa': typeof AuthenticatedAdminSiswaRoute
   '/siswa/berkas': typeof AuthenticatedSiswaBerkasRoute
   '/siswa/biodata': typeof AuthenticatedSiswaBiodataRoute
   '/siswa/kartu': typeof AuthenticatedSiswaKartuRoute
   '/siswa/pembayaran': typeof AuthenticatedSiswaPembayaranRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
   '/siswa': typeof AuthenticatedSiswaIndexRoute
 }
 export interface FileRoutesById {
@@ -115,14 +215,26 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
+  '/informasi': typeof InformasiRoute
+  '/jadwal': typeof JadwalRoute
   '/login': typeof LoginRoute
+  '/pengumuman': typeof PengumumanRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRouteWithChildren
   '/_authenticated/siswa': typeof AuthenticatedSiswaRouteWithChildren
+  '/_authenticated/admin/hero': typeof AuthenticatedAdminHeroRoute
+  '/_authenticated/admin/jadwal': typeof AuthenticatedAdminJadwalRoute
+  '/_authenticated/admin/jenjang': typeof AuthenticatedAdminJenjangRoute
+  '/_authenticated/admin/pembayaran': typeof AuthenticatedAdminPembayaranRoute
+  '/_authenticated/admin/pengaturan': typeof AuthenticatedAdminPengaturanRoute
+  '/_authenticated/admin/pengumuman': typeof AuthenticatedAdminPengumumanRoute
+  '/_authenticated/admin/siswa': typeof AuthenticatedAdminSiswaRoute
   '/_authenticated/siswa/berkas': typeof AuthenticatedSiswaBerkasRoute
   '/_authenticated/siswa/biodata': typeof AuthenticatedSiswaBiodataRoute
   '/_authenticated/siswa/kartu': typeof AuthenticatedSiswaKartuRoute
   '/_authenticated/siswa/pembayaran': typeof AuthenticatedSiswaPembayaranRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/siswa/': typeof AuthenticatedSiswaIndexRoute
 }
 export interface FileRouteTypes {
@@ -130,40 +242,75 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/forgot-password'
+    | '/informasi'
+    | '/jadwal'
     | '/login'
+    | '/pengumuman'
     | '/register'
     | '/reset-password'
+    | '/admin'
     | '/siswa'
+    | '/admin/hero'
+    | '/admin/jadwal'
+    | '/admin/jenjang'
+    | '/admin/pembayaran'
+    | '/admin/pengaturan'
+    | '/admin/pengumuman'
+    | '/admin/siswa'
     | '/siswa/berkas'
     | '/siswa/biodata'
     | '/siswa/kartu'
     | '/siswa/pembayaran'
+    | '/admin/'
     | '/siswa/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/forgot-password'
+    | '/informasi'
+    | '/jadwal'
     | '/login'
+    | '/pengumuman'
     | '/register'
     | '/reset-password'
+    | '/admin/hero'
+    | '/admin/jadwal'
+    | '/admin/jenjang'
+    | '/admin/pembayaran'
+    | '/admin/pengaturan'
+    | '/admin/pengumuman'
+    | '/admin/siswa'
     | '/siswa/berkas'
     | '/siswa/biodata'
     | '/siswa/kartu'
     | '/siswa/pembayaran'
+    | '/admin'
     | '/siswa'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/forgot-password'
+    | '/informasi'
+    | '/jadwal'
     | '/login'
+    | '/pengumuman'
     | '/register'
     | '/reset-password'
+    | '/_authenticated/admin'
     | '/_authenticated/siswa'
+    | '/_authenticated/admin/hero'
+    | '/_authenticated/admin/jadwal'
+    | '/_authenticated/admin/jenjang'
+    | '/_authenticated/admin/pembayaran'
+    | '/_authenticated/admin/pengaturan'
+    | '/_authenticated/admin/pengumuman'
+    | '/_authenticated/admin/siswa'
     | '/_authenticated/siswa/berkas'
     | '/_authenticated/siswa/biodata'
     | '/_authenticated/siswa/kartu'
     | '/_authenticated/siswa/pembayaran'
+    | '/_authenticated/admin/'
     | '/_authenticated/siswa/'
   fileRoutesById: FileRoutesById
 }
@@ -171,7 +318,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  InformasiRoute: typeof InformasiRoute
+  JadwalRoute: typeof JadwalRoute
   LoginRoute: typeof LoginRoute
+  PengumumanRoute: typeof PengumumanRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
 }
@@ -192,11 +342,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pengumuman': {
+      id: '/pengumuman'
+      path: '/pengumuman'
+      fullPath: '/pengumuman'
+      preLoaderRoute: typeof PengumumanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/jadwal': {
+      id: '/jadwal'
+      path: '/jadwal'
+      fullPath: '/jadwal'
+      preLoaderRoute: typeof JadwalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/informasi': {
+      id: '/informasi'
+      path: '/informasi'
+      fullPath: '/informasi'
+      preLoaderRoute: typeof InformasiRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -227,12 +398,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSiswaRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
     '/_authenticated/siswa/': {
       id: '/_authenticated/siswa/'
       path: '/'
       fullPath: '/siswa/'
       preLoaderRoute: typeof AuthenticatedSiswaIndexRouteImport
       parentRoute: typeof AuthenticatedSiswaRoute
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
     }
     '/_authenticated/siswa/pembayaran': {
       id: '/_authenticated/siswa/pembayaran'
@@ -262,8 +447,82 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedSiswaBerkasRouteImport
       parentRoute: typeof AuthenticatedSiswaRoute
     }
+    '/_authenticated/admin/siswa': {
+      id: '/_authenticated/admin/siswa'
+      path: '/siswa'
+      fullPath: '/admin/siswa'
+      preLoaderRoute: typeof AuthenticatedAdminSiswaRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/pengumuman': {
+      id: '/_authenticated/admin/pengumuman'
+      path: '/pengumuman'
+      fullPath: '/admin/pengumuman'
+      preLoaderRoute: typeof AuthenticatedAdminPengumumanRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/pengaturan': {
+      id: '/_authenticated/admin/pengaturan'
+      path: '/pengaturan'
+      fullPath: '/admin/pengaturan'
+      preLoaderRoute: typeof AuthenticatedAdminPengaturanRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/pembayaran': {
+      id: '/_authenticated/admin/pembayaran'
+      path: '/pembayaran'
+      fullPath: '/admin/pembayaran'
+      preLoaderRoute: typeof AuthenticatedAdminPembayaranRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/jenjang': {
+      id: '/_authenticated/admin/jenjang'
+      path: '/jenjang'
+      fullPath: '/admin/jenjang'
+      preLoaderRoute: typeof AuthenticatedAdminJenjangRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/jadwal': {
+      id: '/_authenticated/admin/jadwal'
+      path: '/jadwal'
+      fullPath: '/admin/jadwal'
+      preLoaderRoute: typeof AuthenticatedAdminJadwalRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
+    '/_authenticated/admin/hero': {
+      id: '/_authenticated/admin/hero'
+      path: '/hero'
+      fullPath: '/admin/hero'
+      preLoaderRoute: typeof AuthenticatedAdminHeroRouteImport
+      parentRoute: typeof AuthenticatedAdminRoute
+    }
   }
 }
+
+interface AuthenticatedAdminRouteChildren {
+  AuthenticatedAdminHeroRoute: typeof AuthenticatedAdminHeroRoute
+  AuthenticatedAdminJadwalRoute: typeof AuthenticatedAdminJadwalRoute
+  AuthenticatedAdminJenjangRoute: typeof AuthenticatedAdminJenjangRoute
+  AuthenticatedAdminPembayaranRoute: typeof AuthenticatedAdminPembayaranRoute
+  AuthenticatedAdminPengaturanRoute: typeof AuthenticatedAdminPengaturanRoute
+  AuthenticatedAdminPengumumanRoute: typeof AuthenticatedAdminPengumumanRoute
+  AuthenticatedAdminSiswaRoute: typeof AuthenticatedAdminSiswaRoute
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+}
+
+const AuthenticatedAdminRouteChildren: AuthenticatedAdminRouteChildren = {
+  AuthenticatedAdminHeroRoute: AuthenticatedAdminHeroRoute,
+  AuthenticatedAdminJadwalRoute: AuthenticatedAdminJadwalRoute,
+  AuthenticatedAdminJenjangRoute: AuthenticatedAdminJenjangRoute,
+  AuthenticatedAdminPembayaranRoute: AuthenticatedAdminPembayaranRoute,
+  AuthenticatedAdminPengaturanRoute: AuthenticatedAdminPengaturanRoute,
+  AuthenticatedAdminPengumumanRoute: AuthenticatedAdminPengumumanRoute,
+  AuthenticatedAdminSiswaRoute: AuthenticatedAdminSiswaRoute,
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+}
+
+const AuthenticatedAdminRouteWithChildren =
+  AuthenticatedAdminRoute._addFileChildren(AuthenticatedAdminRouteChildren)
 
 interface AuthenticatedSiswaRouteChildren {
   AuthenticatedSiswaBerkasRoute: typeof AuthenticatedSiswaBerkasRoute
@@ -285,10 +544,12 @@ const AuthenticatedSiswaRouteWithChildren =
   AuthenticatedSiswaRoute._addFileChildren(AuthenticatedSiswaRouteChildren)
 
 interface AuthenticatedRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRouteWithChildren
   AuthenticatedSiswaRoute: typeof AuthenticatedSiswaRouteWithChildren
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRouteWithChildren,
   AuthenticatedSiswaRoute: AuthenticatedSiswaRouteWithChildren,
 }
 
@@ -300,7 +561,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  InformasiRoute: InformasiRoute,
+  JadwalRoute: JadwalRoute,
   LoginRoute: LoginRoute,
+  PengumumanRoute: PengumumanRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
 }
