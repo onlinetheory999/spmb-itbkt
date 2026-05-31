@@ -47,7 +47,7 @@ function SiswaHome() {
     { label: "Biodata", done: !!siswa?.nama_lengkap, link: "/siswa/biodata" },
     { label: "Pembayaran", done: bayar?.status === "lunas", link: "/siswa/pembayaran" },
     { label: "Upload Berkas", done: !!(berkas?.pas_foto && berkas?.kk && berkas?.akta), link: "/siswa/berkas" },
-    { label: "Verifikasi", done: siswa?.status_verifikasi === "diterima", link: "/siswa" },
+    { label: "Verifikasi", done: siswa?.status_verifikasi === "diverifikasi", link: "/siswa" },
   ];
   const completed = steps.filter((s) => s.done).length;
   const progress = (completed / steps.length) * 100;
@@ -147,8 +147,7 @@ function Row({ label, value, mono }: { label: string; value: React.ReactNode; mo
 function StatusBadge({ status }: { status?: string | null }) {
   const map: Record<string, { label: string; cls: string }> = {
     belum: { label: "Belum Verifikasi", cls: "bg-muted text-muted-foreground" },
-    proses: { label: "Diproses", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-400" },
-    diterima: { label: "Diterima", cls: "bg-primary/15 text-primary" },
+    diverifikasi: { label: "Terverifikasi", cls: "bg-primary/15 text-primary" },
     ditolak: { label: "Ditolak", cls: "bg-destructive/15 text-destructive" },
   };
   const s = map[status ?? "belum"] ?? map.belum;

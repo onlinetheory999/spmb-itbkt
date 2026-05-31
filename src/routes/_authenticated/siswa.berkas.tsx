@@ -56,10 +56,10 @@ function BerkasPage() {
       if (upErr) throw upErr;
 
       if (berkas) {
-        const { error } = await supabase.from("upload_berkas").update({ [field]: path }).eq("id", berkas.id);
+        const { error } = await supabase.from("upload_berkas").update({ [field]: path } as any).eq("id", berkas.id);
         if (error) throw error;
       } else {
-        const { error } = await supabase.from("upload_berkas").insert({ siswa_id: siswa.id, [field]: path });
+        const { error } = await supabase.from("upload_berkas").insert({ siswa_id: siswa.id, [field]: path } as any);
         if (error) throw error;
       }
       toast.success("Berkas terupload");
