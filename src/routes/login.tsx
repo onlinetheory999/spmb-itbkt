@@ -47,7 +47,8 @@ function LoginPage() {
       .select("role")
       .eq("user_id", data.user!.id);
     const isAdmin = (roles ?? []).some((r) => r.role === "admin" || r.role === "super_admin");
-    nav({ to: redirectTo !== "/" ? redirectTo : isAdmin ? "/admin" : "/siswa" });
+    const target = redirectTo && redirectTo !== "/" ? redirectTo : isAdmin ? "/admin" : "/siswa";
+    nav({ to: target });
   }
 
   return (
