@@ -15,7 +15,7 @@ const schema = z.object({
 });
 
 export const Route = createFileRoute("/login")({
-  validateSearch: (s) => ({ redirect: (s.redirect as string) || "/" }),
+  validateSearch: (s): { redirect?: string } => ({ redirect: (s.redirect as string) || undefined }),
   head: () => ({ meta: [{ title: "Login | SPMB PKBM Ibnu Taimiyah" }] }),
   component: LoginPage,
 });
