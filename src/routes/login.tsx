@@ -15,7 +15,7 @@ const schema = z.object({
 });
 
 export const Route = createFileRoute("/login")({
-  validateSearch: (s) => ({ redirect: (s.redirect as string) || "/" }),
+  validateSearch: (s): { redirect?: string } => ({ redirect: (s.redirect as string) || undefined }),
   head: () => ({ meta: [{ title: "Login | SPMB PKBM Ibnu Taimiyah" }] }),
   component: LoginPage,
 });
@@ -47,7 +47,8 @@ function LoginPage() {
       .select("role")
       .eq("user_id", data.user!.id);
     const isAdmin = (roles ?? []).some((r) => r.role === "admin" || r.role === "super_admin");
-    nav({ to: redirectTo !== "/" ? redirectTo : isAdmin ? "/admin" : "/siswa" });
+    const target = redirectTo && redirectTo !== "/" ? redirectTo : isAdmin ? "/admin" : "/siswa";
+    nav({ to: target });
   }
 
   return (
