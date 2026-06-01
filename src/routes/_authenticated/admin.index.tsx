@@ -1,9 +1,10 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Users, CreditCard, CheckCircle2, Clock, TrendingUp, GraduationCap } from "lucide-react";
+import { Users, CreditCard, CheckCircle2, Clock, TrendingUp, GraduationCap, ShieldCheck, Database, Activity, Sparkles } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
 import { formatIDR, formatDateTime } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/admin/")({
@@ -11,6 +12,9 @@ export const Route = createFileRoute("/_authenticated/admin/")({
 });
 
 function AdminHome() {
+  const { role, user } = useAuth();
+  const isSuper = role === "super_admin";
+
   const { data: stats } = useQuery({
     queryKey: ["admin-stats"],
     queryFn: async () => {
@@ -31,6 +35,28 @@ function AdminHome() {
     },
   });
 
+  const { data: sysStats } = useQuery({
+    queryKey: ["super-admin-stats"],
+    enabled: isSuper,
+    queryFn: async () => {
+      const [roles, profiles, jenjang, pengumuman] = await Promise.all([
+        supabase.from("user_roles").select("role"),
+        supabase.from("profiles").select("id", { count: "exact", head: true }),
+        supabase.from("jenjang").select("id", { count: "exact", head: true }),
+        supabase.from("pengumuman").select("id", { count: "exact", head: true }),
+      ]);
+      const r = roles.data ?? [];
+      return {
+        totalUser: profiles.count ?? 0,
+        totalAdmin: r.filter((x) => x.role === "admin").length,
+        totalSuper: r.filter((x) => x.role === "super_admin").length,
+        totalSiswa: r.filter((x) => x.role === "siswa").length,
+        totalJenjang: jenjang.count ?? 0,
+        totalPengumuman: pengumuman.count ?? 0,
+      };
+    },
+  });
+
   const cards = [
     { label: "Total Pendaftar", value: stats?.total ?? 0, icon: Users, tone: "bg-primary/10 text-primary" },
     { label: "Terverifikasi", value: stats?.terverifikasi ?? 0, icon: CheckCircle2, tone: "bg-emerald-500/10 text-emerald-600" },
@@ -40,10 +66,52 @@ function AdminHome() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold">Dashboard Admin</h2>
-        <p className="text-sm text-muted-foreground">Ringkasan pendaftaran SPMB 2026-2027</p>
-      </div>
+      {isSuper ? (
+        <div className="rounded-2xl bg-gradient-to-br from-primary via-primary to-gold/80 p-6 md:p-8 text-primary-foreground shadow-elegant relative overflow-hidden">
+          <div className="absolute -top-10 -right-10 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
+          <Badge className="bg-white/20 hover:bg-white/30 text-primary-foreground border-0">
+            <ShieldCheck className="mr-1 h-3 w-3" /> Super Admin
+          </Badge>
+          <h2 className="text-2xl md:text-3xl font-bold mt-3">Panel Kendali Sistem</h2>
+          <p className="text-primary-foreground/85 mt-1 text-sm">
+            Selamat datang, {user?.email}. Anda memiliki akses penuh terhadap sistem SPMB.
+          </p>
+        </div>
+      ) : (
+        <div>
+          <h2 className="text-2xl font-bold">Dashboard Admin</h2>
+          <p className="text-sm text-muted-foreground">Ringkasan pendaftaran SPMB 2026-2027</p>
+        </div>
+      )}
+
+      {isSuper && (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          {[
+            { label: "Total Pengguna", value: sysStats?.totalUser ?? 0, icon: Users, tone: "bg-primary/10 text-primary" },
+            { label: "Super Admin", value: sysStats?.totalSuper ?? 0, icon: ShieldCheck, tone: "bg-gold/15 text-gold" },
+            { label: "Admin", value: sysStats?.totalAdmin ?? 0, icon: Activity, tone: "bg-violet-500/10 text-violet-600" },
+            { label: "Akun Siswa", value: sysStats?.totalSiswa ?? 0, icon: GraduationCap, tone: "bg-emerald-500/10 text-emerald-600" },
+          ].map((c) => (
+            <Card key={c.label} className="p-5 border-primary/20 hover:shadow-elegant transition-all">
+              <div className={`grid h-10 w-10 place-items-center rounded-lg ${c.tone}`}>
+                <c.icon className="h-5 w-5" />
+              </div>
+              <p className="mt-3 text-xs text-muted-foreground uppercase tracking-wide">{c.label}</p>
+              <p className="mt-1 text-2xl font-bold">{c.value}</p>
+            </Card>
+          ))}
+        </div>
+      )}
+
+      {isSuper && (
+        <div>
+          <div className="flex items-center gap-2 mb-3">
+            <Sparkles className="h-4 w-4 text-primary" />
+            <h3 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Ringkasan SPMB</h3>
+          </div>
+        </div>
+      )}
+
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {cards.map((c) => (
