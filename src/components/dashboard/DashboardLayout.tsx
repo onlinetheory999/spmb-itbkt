@@ -1,6 +1,5 @@
-import type { ReactNode } from "react";
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { GraduationCap, LogOut, Menu, Bell } from "lucide-react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { GraduationCap, LogOut, Bell } from "lucide-react";
 import {
   Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel,
   SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger,
@@ -11,19 +10,20 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
+import { Outlet } from "react-router-dom";
 
 export type NavItem = { to: string; label: string; icon: React.ComponentType<{ className?: string }> };
 
 export function DashboardLayout({
-  items, title, children,
-}: { items: NavItem[]; title: string; children: ReactNode }) {
+  items, title,
+}: { items: NavItem[]; title: string }) {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full bg-muted/30">
         <AppSidebar items={items} title={title} />
         <div className="flex-1 flex flex-col min-w-0">
           <TopBar title={title} />
-          <main className="flex-1 p-4 md:p-6 lg:p-8 animate-fade-in">{children}</main>
+          <main className="flex-1 p-4 md:p-6 lg:p-8 animate-fade-in"><Outlet /></main>
         </div>
       </div>
     </SidebarProvider>
@@ -33,7 +33,7 @@ export function DashboardLayout({
 function AppSidebar({ items, title }: { items: NavItem[]; title: string }) {
   const { state } = useSidebar();
   const collapsed = state === "collapsed";
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { pathname } = useLocation();
 
   return (
     <Sidebar collapsible="icon" className="border-r">
@@ -85,7 +85,7 @@ function TopBar({ title }: { title: string }) {
   async function logout() {
     await supabase.auth.signOut();
     toast.success("Anda telah keluar");
-    nav({ to: "/" });
+    nav("/");
   }
 
   return (

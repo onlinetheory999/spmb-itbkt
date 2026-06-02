@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { GraduationCap, Mail, Phone, MapPin } from "lucide-react";
 
 export function Footer() {
@@ -42,8 +42,8 @@ export function Footer() {
         <div>
           <h4 className="text-sm font-semibold mb-3">Kontak</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" /> Jl. Pendidikan No. 1</li>
-            <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> 021-12345678</li>
+            <li className="flex items-center gap-2"><MapPin className="h-4 w-4 text-primary" /> Bukittinggi, Sumatera Barat</li>
+            <li className="flex items-center gap-2"><Phone className="h-4 w-4 text-primary" /> 0752-12345</li>
             <li className="flex items-center gap-2"><Mail className="h-4 w-4 text-primary" /> info@pkbm-ibnutaimiyah.sch.id</li>
           </ul>
         </div>
