@@ -85,6 +85,7 @@ export type Database = {
           jenjang: Database["public"]["Enums"]["jenjang_type"] | null
           judul: string
           tanggal: string
+          tanggal_selesai: string | null
           waktu: string | null
         }
         Insert: {
@@ -94,6 +95,7 @@ export type Database = {
           jenjang?: Database["public"]["Enums"]["jenjang_type"] | null
           judul: string
           tanggal: string
+          tanggal_selesai?: string | null
           waktu?: string | null
         }
         Update: {
@@ -103,6 +105,7 @@ export type Database = {
           jenjang?: Database["public"]["Enums"]["jenjang_type"] | null
           judul?: string
           tanggal?: string
+          tanggal_selesai?: string | null
           waktu?: string | null
         }
         Relationships: []
@@ -115,7 +118,10 @@ export type Database = {
           id: string
           jadwal_seleksi: string | null
           kode: Database["public"]["Enums"]["jenjang_type"]
+          kode_va: string | null
           kuota: number
+          kuota_l: number
+          kuota_p: number
           nama: string
           status: Database["public"]["Enums"]["status_pendaftaran"]
           updated_at: string
@@ -127,7 +133,10 @@ export type Database = {
           id?: string
           jadwal_seleksi?: string | null
           kode: Database["public"]["Enums"]["jenjang_type"]
+          kode_va?: string | null
           kuota?: number
+          kuota_l?: number
+          kuota_p?: number
           nama: string
           status?: Database["public"]["Enums"]["status_pendaftaran"]
           updated_at?: string
@@ -139,7 +148,10 @@ export type Database = {
           id?: string
           jadwal_seleksi?: string | null
           kode?: Database["public"]["Enums"]["jenjang_type"]
+          kode_va?: string | null
           kuota?: number
+          kuota_l?: number
+          kuota_p?: number
           nama?: string
           status?: Database["public"]["Enums"]["status_pendaftaran"]
           updated_at?: string
@@ -296,6 +308,7 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          jenis_kelamin: Database["public"]["Enums"]["jenis_kelamin"]
           jenjang: Database["public"]["Enums"]["jenjang_type"]
           kabupaten: string | null
           nama_lengkap: string
@@ -316,6 +329,7 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          jenis_kelamin?: Database["public"]["Enums"]["jenis_kelamin"]
           jenjang: Database["public"]["Enums"]["jenjang_type"]
           kabupaten?: string | null
           nama_lengkap: string
@@ -336,6 +350,7 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          jenis_kelamin?: Database["public"]["Enums"]["jenis_kelamin"]
           jenjang?: Database["public"]["Enums"]["jenjang_type"]
           kabupaten?: string | null
           nama_lengkap?: string
@@ -425,6 +440,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      cek_kuota: { Args: { _jenjang: string; _jk: string }; Returns: Json }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -436,6 +452,7 @@ export type Database = {
     }
     Enums: {
       app_role: "super_admin" | "admin" | "siswa"
+      jenis_kelamin: "L" | "P"
       jenjang_type: "SD" | "SMP" | "SMA"
       status_akun: "nonaktif" | "aktif"
       status_bayar: "pending" | "lunas" | "gagal"
@@ -569,6 +586,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["super_admin", "admin", "siswa"],
+      jenis_kelamin: ["L", "P"],
       jenjang_type: ["SD", "SMP", "SMA"],
       status_akun: ["nonaktif", "aktif"],
       status_bayar: ["pending", "lunas", "gagal"],
