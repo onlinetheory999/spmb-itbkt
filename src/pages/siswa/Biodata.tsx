@@ -99,12 +99,8 @@ export default function Biodata() {
           return;
         }
 
-        const { data: j } = await supabase.from("jenjang").select("biaya").eq("kode", parsed.data.jenjang).maybeSingle();
-        const biaya = j?.biaya ?? 250000;
-        // nomor_va akan diisi otomatis oleh trigger berdasarkan kode_va jenjang
-        await supabase.from("pembayaran").insert({
-          siswa_id: newSiswa.id, biaya, status: "pending", nomor_va: "",
-        } as any);
+        // Tagihan pendaftaran otomatis dibuat oleh trigger DB.
+
       }
       toast.success("Biodata tersimpan");
       qc.invalidateQueries();
