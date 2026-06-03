@@ -41,6 +41,117 @@ export type Database = {
         }
         Relationships: []
       }
+      biaya_daftar_ulang: {
+        Row: {
+          aktif: boolean
+          created_at: string
+          id: string
+          jenjang: Database["public"]["Enums"]["jenjang_type"]
+          nominal: number
+          tahun_ajaran_id: string
+        }
+        Insert: {
+          aktif?: boolean
+          created_at?: string
+          id?: string
+          jenjang: Database["public"]["Enums"]["jenjang_type"]
+          nominal?: number
+          tahun_ajaran_id: string
+        }
+        Update: {
+          aktif?: boolean
+          created_at?: string
+          id?: string
+          jenjang?: Database["public"]["Enums"]["jenjang_type"]
+          nominal?: number
+          tahun_ajaran_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "biaya_daftar_ulang_tahun_ajaran_id_fkey"
+            columns: ["tahun_ajaran_id"]
+            isOneToOne: false
+            referencedRelation: "tahun_ajaran"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      biaya_pendaftaran: {
+        Row: {
+          aktif: boolean
+          created_at: string
+          id: string
+          jenjang: Database["public"]["Enums"]["jenjang_type"]
+          nominal: number
+          tahun_ajaran_id: string
+        }
+        Insert: {
+          aktif?: boolean
+          created_at?: string
+          id?: string
+          jenjang: Database["public"]["Enums"]["jenjang_type"]
+          nominal?: number
+          tahun_ajaran_id: string
+        }
+        Update: {
+          aktif?: boolean
+          created_at?: string
+          id?: string
+          jenjang?: Database["public"]["Enums"]["jenjang_type"]
+          nominal?: number
+          tahun_ajaran_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "biaya_pendaftaran_tahun_ajaran_id_fkey"
+            columns: ["tahun_ajaran_id"]
+            isOneToOne: false
+            referencedRelation: "tahun_ajaran"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      gelombang: {
+        Row: {
+          aktif: boolean
+          created_at: string
+          id: string
+          kuota: number
+          nama: string
+          tahun_ajaran_id: string
+          tanggal_mulai: string
+          tanggal_selesai: string
+        }
+        Insert: {
+          aktif?: boolean
+          created_at?: string
+          id?: string
+          kuota?: number
+          nama: string
+          tahun_ajaran_id: string
+          tanggal_mulai: string
+          tanggal_selesai: string
+        }
+        Update: {
+          aktif?: boolean
+          created_at?: string
+          id?: string
+          kuota?: number
+          nama?: string
+          tahun_ajaran_id?: string
+          tanggal_mulai?: string
+          tanggal_selesai?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "gelombang_tahun_ajaran_id_fkey"
+            columns: ["tahun_ajaran_id"]
+            isOneToOne: false
+            referencedRelation: "tahun_ajaran"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       hero_slides: {
         Row: {
           aktif: boolean
@@ -158,53 +269,6 @@ export type Database = {
         }
         Relationships: []
       }
-      pembayaran: {
-        Row: {
-          biaya: number
-          catatan: string | null
-          created_at: string
-          id: string
-          metode: string | null
-          nomor_va: string
-          siswa_id: string
-          status: Database["public"]["Enums"]["status_bayar"]
-          tanggal_bayar: string | null
-          updated_at: string
-        }
-        Insert: {
-          biaya: number
-          catatan?: string | null
-          created_at?: string
-          id?: string
-          metode?: string | null
-          nomor_va: string
-          siswa_id: string
-          status?: Database["public"]["Enums"]["status_bayar"]
-          tanggal_bayar?: string | null
-          updated_at?: string
-        }
-        Update: {
-          biaya?: number
-          catatan?: string | null
-          created_at?: string
-          id?: string
-          metode?: string | null
-          nomor_va?: string
-          siswa_id?: string
-          status?: Database["public"]["Enums"]["status_bayar"]
-          tanggal_bayar?: string | null
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "pembayaran_siswa_id_fkey"
-            columns: ["siswa_id"]
-            isOneToOne: false
-            referencedRelation: "siswa"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       pengumuman: {
         Row: {
           created_at: string
@@ -303,20 +367,44 @@ export type Database = {
       }
       siswa: {
         Row: {
+          agama: string | null
           alamat: string | null
+          anak_ke: number | null
           asal_sekolah: string | null
           created_at: string
           email: string
+          email_ortu: string | null
           id: string
           jenis_kelamin: Database["public"]["Enums"]["jenis_kelamin"]
+          jenis_sekolah_asal: string | null
           jenjang: Database["public"]["Enums"]["jenjang_type"]
+          jumlah_saudara: number | null
           kabupaten: string | null
+          kabupaten_sekolah: string | null
+          kecamatan: string | null
+          kelulusan_published: boolean
+          kelurahan: string | null
+          kewarganegaraan: string | null
+          nama_ayah: string | null
+          nama_ibu: string | null
           nama_lengkap: string
+          nik: string | null
+          nik_ayah: string | null
+          nik_ibu: string | null
+          nisn: string | null
           no_hp: string | null
+          no_hp_ortu: string | null
+          no_kk: string | null
           nomor_peserta: string | null
+          nomor_registrasi: string | null
+          pekerjaan_ayah: string | null
+          pekerjaan_ibu: string | null
           provinsi: string | null
+          provinsi_sekolah: string | null
           status_akun: Database["public"]["Enums"]["status_akun"]
+          status_kelulusan: Database["public"]["Enums"]["status_kelulusan"]
           status_verifikasi: Database["public"]["Enums"]["status_verifikasi"]
+          tahun_ajaran_kode: string | null
           tahun_lulus: string | null
           tanggal_lahir: string | null
           tempat_lahir: string | null
@@ -324,20 +412,44 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          agama?: string | null
           alamat?: string | null
+          anak_ke?: number | null
           asal_sekolah?: string | null
           created_at?: string
           email: string
+          email_ortu?: string | null
           id?: string
           jenis_kelamin?: Database["public"]["Enums"]["jenis_kelamin"]
+          jenis_sekolah_asal?: string | null
           jenjang: Database["public"]["Enums"]["jenjang_type"]
+          jumlah_saudara?: number | null
           kabupaten?: string | null
+          kabupaten_sekolah?: string | null
+          kecamatan?: string | null
+          kelulusan_published?: boolean
+          kelurahan?: string | null
+          kewarganegaraan?: string | null
+          nama_ayah?: string | null
+          nama_ibu?: string | null
           nama_lengkap: string
+          nik?: string | null
+          nik_ayah?: string | null
+          nik_ibu?: string | null
+          nisn?: string | null
           no_hp?: string | null
+          no_hp_ortu?: string | null
+          no_kk?: string | null
           nomor_peserta?: string | null
+          nomor_registrasi?: string | null
+          pekerjaan_ayah?: string | null
+          pekerjaan_ibu?: string | null
           provinsi?: string | null
+          provinsi_sekolah?: string | null
           status_akun?: Database["public"]["Enums"]["status_akun"]
+          status_kelulusan?: Database["public"]["Enums"]["status_kelulusan"]
           status_verifikasi?: Database["public"]["Enums"]["status_verifikasi"]
+          tahun_ajaran_kode?: string | null
           tahun_lulus?: string | null
           tanggal_lahir?: string | null
           tempat_lahir?: string | null
@@ -345,20 +457,44 @@ export type Database = {
           user_id: string
         }
         Update: {
+          agama?: string | null
           alamat?: string | null
+          anak_ke?: number | null
           asal_sekolah?: string | null
           created_at?: string
           email?: string
+          email_ortu?: string | null
           id?: string
           jenis_kelamin?: Database["public"]["Enums"]["jenis_kelamin"]
+          jenis_sekolah_asal?: string | null
           jenjang?: Database["public"]["Enums"]["jenjang_type"]
+          jumlah_saudara?: number | null
           kabupaten?: string | null
+          kabupaten_sekolah?: string | null
+          kecamatan?: string | null
+          kelulusan_published?: boolean
+          kelurahan?: string | null
+          kewarganegaraan?: string | null
+          nama_ayah?: string | null
+          nama_ibu?: string | null
           nama_lengkap?: string
+          nik?: string | null
+          nik_ayah?: string | null
+          nik_ibu?: string | null
+          nisn?: string | null
           no_hp?: string | null
+          no_hp_ortu?: string | null
+          no_kk?: string | null
           nomor_peserta?: string | null
+          nomor_registrasi?: string | null
+          pekerjaan_ayah?: string | null
+          pekerjaan_ibu?: string | null
           provinsi?: string | null
+          provinsi_sekolah?: string | null
           status_akun?: Database["public"]["Enums"]["status_akun"]
+          status_kelulusan?: Database["public"]["Enums"]["status_kelulusan"]
           status_verifikasi?: Database["public"]["Enums"]["status_verifikasi"]
+          tahun_ajaran_kode?: string | null
           tahun_lulus?: string | null
           tanggal_lahir?: string | null
           tempat_lahir?: string | null
@@ -367,41 +503,163 @@ export type Database = {
         }
         Relationships: []
       }
+      tagihan: {
+        Row: {
+          catatan: string | null
+          created_at: string
+          id: string
+          jenis: Database["public"]["Enums"]["jenis_tagihan"]
+          jenjang: Database["public"]["Enums"]["jenjang_type"]
+          metode: string | null
+          nominal_dibayar: number
+          nominal_tagihan: number
+          nomor_va: string
+          selisih: number | null
+          siswa_id: string
+          status: Database["public"]["Enums"]["status_tagihan"]
+          tahun_ajaran_kode: string
+          tanggal_bayar: string | null
+          tanggal_tagihan: string
+          tanggal_tempo: string | null
+          trx_id: string
+          updated_at: string
+        }
+        Insert: {
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          jenis: Database["public"]["Enums"]["jenis_tagihan"]
+          jenjang: Database["public"]["Enums"]["jenjang_type"]
+          metode?: string | null
+          nominal_dibayar?: number
+          nominal_tagihan: number
+          nomor_va: string
+          selisih?: number | null
+          siswa_id: string
+          status?: Database["public"]["Enums"]["status_tagihan"]
+          tahun_ajaran_kode: string
+          tanggal_bayar?: string | null
+          tanggal_tagihan?: string
+          tanggal_tempo?: string | null
+          trx_id: string
+          updated_at?: string
+        }
+        Update: {
+          catatan?: string | null
+          created_at?: string
+          id?: string
+          jenis?: Database["public"]["Enums"]["jenis_tagihan"]
+          jenjang?: Database["public"]["Enums"]["jenjang_type"]
+          metode?: string | null
+          nominal_dibayar?: number
+          nominal_tagihan?: number
+          nomor_va?: string
+          selisih?: number | null
+          siswa_id?: string
+          status?: Database["public"]["Enums"]["status_tagihan"]
+          tahun_ajaran_kode?: string
+          tanggal_bayar?: string | null
+          tanggal_tagihan?: string
+          tanggal_tempo?: string | null
+          trx_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tagihan_siswa_id_fkey"
+            columns: ["siswa_id"]
+            isOneToOne: false
+            referencedRelation: "siswa"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tahun_ajaran: {
+        Row: {
+          aktif: boolean
+          created_at: string
+          id: string
+          kode: string
+          label: string
+          updated_at: string
+        }
+        Insert: {
+          aktif?: boolean
+          created_at?: string
+          id?: string
+          kode: string
+          label: string
+          updated_at?: string
+        }
+        Update: {
+          aktif?: boolean
+          created_at?: string
+          id?: string
+          kode?: string
+          label?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       upload_berkas: {
         Row: {
           akta: string | null
+          catatan_revisi: string | null
           created_at: string
           foto: string | null
           id: string
           ijazah: string | null
           kk: string | null
+          ktp_ortu: string | null
           pas_foto: string | null
           raport: string | null
           siswa_id: string
+          skl: string | null
+          status_akta: Database["public"]["Enums"]["status_dokumen"]
+          status_kk: Database["public"]["Enums"]["status_dokumen"]
+          status_ktp_ortu: Database["public"]["Enums"]["status_dokumen"]
+          status_pas_foto: Database["public"]["Enums"]["status_dokumen"]
+          status_skl: Database["public"]["Enums"]["status_dokumen"]
           updated_at: string
         }
         Insert: {
           akta?: string | null
+          catatan_revisi?: string | null
           created_at?: string
           foto?: string | null
           id?: string
           ijazah?: string | null
           kk?: string | null
+          ktp_ortu?: string | null
           pas_foto?: string | null
           raport?: string | null
           siswa_id: string
+          skl?: string | null
+          status_akta?: Database["public"]["Enums"]["status_dokumen"]
+          status_kk?: Database["public"]["Enums"]["status_dokumen"]
+          status_ktp_ortu?: Database["public"]["Enums"]["status_dokumen"]
+          status_pas_foto?: Database["public"]["Enums"]["status_dokumen"]
+          status_skl?: Database["public"]["Enums"]["status_dokumen"]
           updated_at?: string
         }
         Update: {
           akta?: string | null
+          catatan_revisi?: string | null
           created_at?: string
           foto?: string | null
           id?: string
           ijazah?: string | null
           kk?: string | null
+          ktp_ortu?: string | null
           pas_foto?: string | null
           raport?: string | null
           siswa_id?: string
+          skl?: string | null
+          status_akta?: Database["public"]["Enums"]["status_dokumen"]
+          status_kk?: Database["public"]["Enums"]["status_dokumen"]
+          status_ktp_ortu?: Database["public"]["Enums"]["status_dokumen"]
+          status_pas_foto?: Database["public"]["Enums"]["status_dokumen"]
+          status_skl?: Database["public"]["Enums"]["status_dokumen"]
           updated_at?: string
         }
         Relationships: [
@@ -441,6 +699,15 @@ export type Database = {
     }
     Functions: {
       cek_kuota: { Args: { _jenjang: string; _jk: string }; Returns: Json }
+      generate_nomor_peserta: {
+        Args: {
+          _jenjang: Database["public"]["Enums"]["jenjang_type"]
+          _tahun_kode: string
+        }
+        Returns: string
+      }
+      generate_nomor_registrasi: { Args: never; Returns: string }
+      generate_trx_id: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -449,6 +716,8 @@ export type Database = {
         Returns: boolean
       }
       is_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_biodata_lengkap: { Args: { _user_id: string }; Returns: boolean }
+      is_lunas_pendaftaran: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "super_admin" | "admin" | "siswa"
