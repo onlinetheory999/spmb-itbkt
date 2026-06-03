@@ -1,124 +1,122 @@
+# Rencana Perbaikan SPMB — Alur Berurutan 8 Tahap
 
-# Rencana Pengerjaan (4 Batch)
-
-Skala besar — total ~40 file dirombak dan beberapa migrasi DB. Saya kerjakan **per batch**, minta persetujuan/test setelah tiap batch sebelum lanjut.
-
-## Batch 0 — Migrasi Skema DB (jalankan dulu)
-
-Pondasi untuk semua fitur baru. Satu migrasi tunggal:
-
-- Tambah enum `jenis_kelamin` (`L`, `P`).
-- Tabel `siswa`: kolom baru `jenis_kelamin jenis_kelamin NOT NULL DEFAULT 'L'` (siswa lama default L, bisa diedit).
-- Tabel `jenjang`: tambah `kuota_l int DEFAULT 0`, `kuota_p int DEFAULT 0`, `kode_va text` (misal "201" SD, "202" SMP, "203" SMA). Kolom `kuota` lama tetap (= kuota_l + kuota_p sebagai info).
-- Tabel `jadwal`: tambah `tanggal_selesai date` (rentang).
-- Function `public.cek_kuota(jenjang, jenis_kelamin)` SECURITY DEFINER → return boolean (true = masih ada slot).
-- Trigger `before insert on siswa` → tolak insert kalau kuota L/P sudah penuh, dengan pesan: `kuota_penuh:L` / `kuota_penuh:P`.
-- Trigger `before insert on pembayaran` → otomatis isi `nomor_va` dari `jenjang.kode_va + no_hp` jika kosong.
-- Storage policy: bucket `website-public` izinkan admin upload (hero images).
-
-## Batch 1 — Refactor ke React Router DOM SPA
-
-Ganti TanStack Router/Start sepenuhnya. ~30 file rute disentuh.
-
-**Hapus:**
-- `@tanstack/react-router`, `@tanstack/react-start`, `@tanstack/router-plugin`, `@tanstack/router-devtools`, `nitropack`, `vinxi` (jika ada), `src/start.ts`, `src/server.ts`, `src/router.tsx`, `src/routeTree.gen.ts`, `index.hostinger.html`, `vite.config.hostinger.ts`, semua server-fn middleware Supabase.
-
-**Tambah:**
-- `react-router-dom@^6`.
-- `vite.config.ts` baru: plain React + Tailwind v4 plugin, output `dist/`.
-- `index.html` (root) sebagai entry SPA tunggal.
-- `src/main.tsx` mount `<BrowserRouter>` → `<App />`.
-- `src/App.tsx` berisi semua `<Routes>` dengan `<Route>` per halaman.
-- `src/routes/*` dipindah ke `src/pages/*` sebagai komponen biasa (tanpa `createFileRoute`). Semua `Link`/`useNavigate` dari `@tanstack/react-router` diganti `react-router-dom`.
-- `RequireAuth` & `RequireAdmin` wrapper component menggunakan `useAuth()` yang sudah ada.
-- `public/.htaccess` SPA fallback sudah ada — dipakai apa adanya.
-- Script `package.json`: `"build": "vite build"`, `"dev": "vite"`.
-
-**Hasil:** `npm run build` → `dist/index.html` + assets, langsung upload ke `public_html`.
-
-## Batch 2 — Register + Gender + Auto-tolak Kuota
-
-- Form `/register`: tambah field **Jenis Kelamin** (radio L/P) + sebelum submit panggil `cek_kuota` RPC. Jika penuh, tampilkan toast: *"Maaf, kuota untuk siswa laki-laki/perempuan jenjang X sudah penuh."* dan blokir submit.
-- Sisipkan `jenis_kelamin` ke insert `siswa`. Tangani error trigger `kuota_penuh:*` dengan pesan ramah.
-- Halaman publik `/jenjang` (jika ada) tampilkan progress L/P real-time dari count siswa.
-
-## Batch 3 — CRUD Lengkap Super Admin
-
-**Data Siswa (`/admin/siswa`):**
-- Kolom baru: Jenis Kelamin, Status Akun.
-- Aksi per row (super_admin only): Verifikasi, Tolak, **Nonaktifkan** (set `status_akun='nonaktif'`), **Aktifkan kembali**, Edit biodata, Lihat detail.
-- Filter: jenjang, status, jenis kelamin. Search nama/email/nomor.
-
-**Jenjang & Biaya (`/admin/jenjang`):**
-- CRUD penuh: tombol "Tambah Jenjang", edit inline existing, hapus dengan konfirmasi.
-- Field per jenjang: Nama, Kode, Biaya, **Kuota L**, **Kuota P**, **Kode VA**, Jadwal Seleksi, Deskripsi, Status (dibuka/ditutup).
-- Tampilkan progress: `terisi_l / kuota_l` & `terisi_p / kuota_p` dengan bar.
-
-**Pembayaran (`/admin/pembayaran`):**
-- Tombol **"Simulasi Bayar VA Nagari"** per row pending → set `status='lunas'`, `tanggal_bayar=now()`, `metode='VA Nagari (Simulasi)'`. Catatan: *"Simulasi — production akan otomatis dari webhook VA Nagari"*.
-- Tombol manual approve/reject tetap ada.
-
-**Jadwal (`/admin/jadwal`):**
-- Form: `tanggal_mulai` & `tanggal_selesai` (date range picker). Tampil di publik sebagai "1 Juli – 15 Juli 2026".
-
-## Batch 4 — Hero Slider Upload + Polish UI
-
-- `/admin/hero`: input file (`accept="image/jpeg,image/jpg,image/png"`, max 2MB). Upload ke bucket `website-public/hero/{uuid}.{ext}` via `supabase.storage`, simpan public URL ke `hero_slides.image_url`. Preview thumbnail, hapus file lama saat di-replace.
-- Pengaturan akun semua role di `/admin/akun`: tabel `profiles` + `user_roles`, super_admin bisa ubah role (promote admin / demote siswa), reset password (kirim email), nonaktifkan.
-- Polish: semua tabel responsif (card view di mobile), gradient header konsisten, badge status berwarna, skeleton loader.
+Scope sangat besar. Saya bagi jadi **5 batch** agar bisa direview bertahap. Setiap batch berdiri sendiri dan bisa dites sebelum lanjut.
 
 ---
 
-## Detail Teknis
+## Ringkasan Alur Wajib
 
-**Migrasi trigger kuota (inti Batch 0):**
-```sql
-create or replace function public.enforce_kuota()
-returns trigger language plpgsql security definer set search_path=public as $$
-declare terisi int; kuota int;
-begin
-  select case when new.jenis_kelamin='L' then kuota_l else kuota_p end
-    into kuota from jenjang where kode = new.jenjang;
-  select count(*) into terisi from siswa
-    where jenjang = new.jenjang and jenis_kelamin = new.jenis_kelamin
-      and status_akun <> 'nonaktif';
-  if terisi >= kuota then
-    raise exception 'kuota_penuh:%', new.jenis_kelamin using errcode='P0001';
-  end if;
-  return new;
-end $$;
+```
+1. Registrasi Akun
+2. Invoice & Bayar Pendaftaran   ← kunci 3-8
+3. Lengkapi Biodata              ← kunci 4
+4. Upload Berkas                 ← kunci 5
+5. Verifikasi Berkas (admin)
+6. Cetak Kartu Peserta
+7. Hasil Kelulusan
+8. Daftar Ulang (jika lulus)     ← invoice baru
 ```
 
-**Routing baru (Batch 1) — `src/App.tsx`:**
-```tsx
-<BrowserRouter>
-  <Routes>
-    <Route element={<PublicLayout/>}>
-      <Route index element={<Home/>}/>
-      <Route path="informasi" element={<Informasi/>}/>
-      {/* ... */}
-    </Route>
-    <Route path="login" element={<Login/>}/>
-    <Route path="register" element={<Register/>}/>
-    <Route element={<RequireAuth/>}>
-      <Route path="siswa/*" element={<SiswaShell/>}/>
-      <Route element={<RequireAdmin/>}>
-        <Route path="admin/*" element={<AdminShell/>}/>
-      </Route>
-    </Route>
-    <Route path="*" element={<NotFound/>}/>
-  </Routes>
-</BrowserRouter>
-```
+Gate dipasang di **DB (RLS/trigger)** dan **UI (guard route + disabled menu)**.
 
-**Catatan penting:**
-- Tabel `user_roles` saat ini tidak punya policy INSERT/UPDATE/DELETE. Batch 3 akan menambah policy yang membolehkan **super_admin** mengelola roles user lain.
-- Setelah Batch 1 selesai, struktur folder berubah signifikan (`src/routes/` → `src/pages/`). Iterasi berikutnya akan terasa beda.
+---
+
+## Batch A — Skema Database Baru (1 migrasi besar)
+
+**Tabel baru / diubah:**
+
+- `tahun_ajaran` (kode `2627`, label `2026/2027`, aktif) — master
+- `gelombang` (nama, mulai, selesai, kuota, tahun_ajaran_id)
+- `biaya_pendaftaran` (tahun_ajaran_id, jenjang, nominal, aktif)
+- `biaya_daftar_ulang` (tahun_ajaran_id, jenjang, nominal, aktif)
+- `siswa`: tambah `nomor_registrasi` (unik), `nik` (unik), `nisn`, `agama`, `jumlah_saudara`, `anak_ke`, `kecamatan`, `kelurahan`, `provinsi_sekolah`, `kabupaten_sekolah`, `kewarganegaraan`, `no_kk`, `nama_ayah`, `nik_ayah`, `pekerjaan_ayah`, `nama_ibu`, `nik_ibu`, `pekerjaan_ibu`, `no_hp_ortu`, `email_ortu`, `tahun_ajaran_kode` (snapshot), `status_kelulusan` enum(`belum`,`lulus`,`tidak_lulus`)
+- Enum `jenjang` extend `TK`.
+- `pembayaran` → ganti `tagihan`: `trx_id` (`TRX{YYYY}{NNNNN}`), `jenis` enum(`pendaftaran`,`daftar_ulang`), `nominal_tagihan`, `nominal_dibayar`, `selisih`, `tanggal_tagihan`, `tanggal_tempo`, `status` enum(`belum_bayar`,`menunggu_verifikasi`,`lunas`), `nomor_va`. Nominal **snapshot permanen**.
+- `upload_berkas`: tambah `ktp_ortu`, `skl`; status per-dok + `catatan_revisi`.
+
+**Function & trigger:**
+
+- `generate_nomor_registrasi()`, `generate_nomor_peserta(tahun, jenjang)`, `generate_trx_id()`
+- Trigger AFTER INSERT ON `siswa` → buat tagihan pendaftaran (snapshot nominal aktif + VA)
+- Trigger BEFORE UPDATE ON `tagihan` → hitung status dari `nominal_dibayar` vs `nominal_tagihan`
+- Helper `cek_dapat_isi_biodata`, `cek_dapat_upload`, `cek_dapat_cetak_kartu` (security definer)
+
+**RLS:** master read publik, tulis admin. Tagihan/berkas read own + admin. GRANT lengkap.
+
+---
+
+## Batch B — Halaman Siswa: Gate berurutan + UI baru
+
+- `SiswaLayout`: hitung progress 8 step dari DB. Menu disabled (lock icon) jika prasyarat belum.
+- `RequireStep` guard tiap route (`/siswa/biodata`, `/upload`, `/kartu`, `/kelulusan`, `/daftar-ulang`).
+- `/siswa` dashboard: progress bar visual 8 step + badge.
+- `/siswa/invoice` (baru): VA, nominal snapshot, batas waktu, tata cara pembayaran.
+- `/siswa/biodata`: form lengkap semua field spec. Auto-generate nomor peserta saat simpan pertama.
+- `/siswa/berkas`: 5 dokumen (pas_foto, akta, kk, skl, ktp_ortu) — PDF/JPG/PNG max 2MB.
+- `/siswa/kartu`: PDF A4 + QR code (`qrcode` lib).
+- `/siswa/kelulusan`: status + tombol Cetak Data jika lulus.
+- `/siswa/tagihan`: list semua tagihan.
+- `/siswa/daftar-ulang`: aktif kalau lulus & ada tagihan daftar_ulang.
+
+---
+
+## Batch C — Registrasi & Email
+
+- `/register` form lengkap (Nama, Email Ortu, TTL, HP Ortu, Provinsi/Kab/Alamat, Tahun Lulus, Jenis Sekolah, Sekolah Asal, Jenjang TK/SD/SMP).
+- Password default `STQ1tbkt`. Banner ganti password setelah login pertama.
+- Setelah signUp: trigger DB buat profile + siswa + tagihan otomatis.
+- Edge function `send-registrasi-email` via Lovable Emails — nama, no registrasi, username, password default, link login, info pembayaran.
+- Redirect ke `/siswa/invoice`.
+
+---
+
+## Batch D — Admin Panel (master + kelulusan)
+
+- `/admin/tahun-ajaran` — CRUD + aktivasi
+- `/admin/gelombang` — CRUD
+- `/admin/biaya-pendaftaran` — CRUD per tahun×jenjang
+- `/admin/biaya-daftar-ulang` — CRUD per tahun×jenjang
+- `/admin/tagihan` (refactor pembayaran): verifikasi, ubah lunas, simulasi VA, cetak rekap PDF, generate tagihan daftar ulang per siswa lulus
+- `/admin/siswa`: aksi Verifikasi Berkas (approve/reject + catatan), Kelola Kelulusan (lulus/tidak/draft/publish)
+- `/admin/pengumuman-kelulusan` — draft/publish bulk
+- `/admin/jenjang` jadi hanya kuota (biaya pindah ke master baru)
+
+---
+
+## Batch E — Polish & Validasi
+
+- Badge color: hijau (lunas/lulus/disetujui), kuning (menunggu), merah (belum bayar/ditolak/tidak lulus)
+- Audit log trigger di tagihan & siswa
+- Constraint unik: email, nik, nomor_registrasi, nomor_peserta, trx_id
+- Mobile responsive review semua tabel
+- Banner ganti password default
+- 404 ramah untuk route terkunci
+
+---
+
+## Risiko & Catatan Teknis
+
+- **Migrasi data:** tabel `pembayaran` lama akan di-drop, ganti `tagihan`. Data test akan hilang.
+- **Enum `jenjang`** tidak bisa drop SMA; tambah TK saja, SMA tidak ditampilkan di register.
+- **Password default `STQ1tbkt`**: Supabase Auth pakai password ini saat signUp; force-reset via UI.
+- **Email**: butuh Lovable Email domain. Akan saya minta setup di awal Batch C jika belum ada.
 
 ---
 
 ## Urutan Eksekusi
 
-Saya akan kerjakan **Batch 0 dulu** (migrasi DB) di pesan ini setelah plan disetujui. Selesaikan migrasi → test → lalu lanjut Batch 1, dst. Setiap batch akan minta konfirmasi sebelum lanjut ke batch berikutnya.
+1. **Batch A** — migrasi DB besar
+2. **Batch B** — halaman siswa + gate
+3. **Batch C** — registrasi + email
+4. **Batch D** — admin master
+5. **Batch E** — polish
 
-Setuju lanjut dengan rencana ini?
+Di tiap batch saya konfirmasi singkat sebelum lanjut.
+
+---
+
+## Konfirmasi sebelum mulai
+
+1. **OK drop tabel `pembayaran` lama** dan ganti `tagihan`? (data test akan hilang)
+2. **Setup Lovable Email** sekarang atau nanti di Batch C?
+3. Mulai **Batch A** sekarang?
