@@ -453,10 +453,14 @@ export type Database = {
     Enums: {
       app_role: "super_admin" | "admin" | "siswa"
       jenis_kelamin: "L" | "P"
-      jenjang_type: "SD" | "SMP" | "SMA"
+      jenis_tagihan: "pendaftaran" | "daftar_ulang"
+      jenjang_type: "TK" | "SD" | "SMP" | "SMA"
       status_akun: "nonaktif" | "aktif"
       status_bayar: "pending" | "lunas" | "gagal"
+      status_dokumen: "belum" | "menunggu" | "disetujui" | "ditolak"
+      status_kelulusan: "belum" | "lulus" | "tidak_lulus"
       status_pendaftaran: "dibuka" | "ditutup"
+      status_tagihan: "belum_bayar" | "menunggu_verifikasi" | "lunas"
       status_verifikasi: "belum" | "diverifikasi" | "ditolak"
     }
     CompositeTypes: {
@@ -587,10 +591,14 @@ export const Constants = {
     Enums: {
       app_role: ["super_admin", "admin", "siswa"],
       jenis_kelamin: ["L", "P"],
-      jenjang_type: ["SD", "SMP", "SMA"],
+      jenis_tagihan: ["pendaftaran", "daftar_ulang"],
+      jenjang_type: ["TK", "SD", "SMP", "SMA"],
       status_akun: ["nonaktif", "aktif"],
       status_bayar: ["pending", "lunas", "gagal"],
+      status_dokumen: ["belum", "menunggu", "disetujui", "ditolak"],
+      status_kelulusan: ["belum", "lulus", "tidak_lulus"],
       status_pendaftaran: ["dibuka", "ditutup"],
+      status_tagihan: ["belum_bayar", "menunggu_verifikasi", "lunas"],
       status_verifikasi: ["belum", "diverifikasi", "ditolak"],
     },
   },
