@@ -21,11 +21,16 @@ export default function SiswaIndex() {
     },
   });
 
-  const { data: bayar } = useQuery({
-    queryKey: ["bayar-me", siswa?.id],
+  const { data: tagihan } = useQuery({
+    queryKey: ["tagihan-pendaftaran", siswa?.id],
     enabled: !!siswa?.id,
     queryFn: async () => {
-      const { data } = await supabase.from("pembayaran").select("*").eq("siswa_id", siswa!.id).maybeSingle();
+      const { data } = await supabase
+        .from("tagihan")
+        .select("*")
+        .eq("siswa_id", siswa!.id)
+        .eq("jenis", "pendaftaran")
+        .maybeSingle();
       return data;
     },
   });
@@ -39,11 +44,16 @@ export default function SiswaIndex() {
     },
   });
 
+  const lunas = tagihan?.status === "lunas";
   const steps = [
-    { label: "Biodata", done: !!siswa?.nama_lengkap, link: "/siswa/biodata" },
-    { label: "Pembayaran", done: bayar?.status === "lunas", link: "/siswa/pembayaran" },
+    { label: "Registrasi", done: !!siswa, link: "/siswa" },
+    { label: "Pembayaran", done: lunas, link: "/siswa/pembayaran" },
+    { label: "Biodata", done: !!siswa?.nama_lengkap && lunas, link: "/siswa/biodata" },
     { label: "Upload Berkas", done: !!(berkas?.pas_foto && berkas?.kk && berkas?.akta), link: "/siswa/berkas" },
     { label: "Verifikasi", done: siswa?.status_verifikasi === "diverifikasi", link: "/siswa" },
+    { label: "Cetak Kartu", done: false, link: "/siswa/kartu" },
+    { label: "Hasil Kelulusan", done: siswa?.status_kelulusan === "lulus", link: "/siswa" },
+    { label: "Daftar Ulang", done: false, link: "/siswa" },
   ];
   const completed = steps.filter((s) => s.done).length;
   const progress = (completed / steps.length) * 100;
@@ -66,20 +76,18 @@ export default function SiswaIndex() {
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {steps.map((s, i) => (
-          <Link key={s.label} to={s.link}>
-            <Card className="p-5 hover:shadow-elegant transition-all hover:-translate-y-0.5 h-full">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold text-muted-foreground">LANGKAH {i + 1}</span>
-                {s.done ? (
-                  <CheckCircle2 className="h-5 w-5 text-primary" />
-                ) : (
-                  <Clock className="h-5 w-5 text-muted-foreground" />
-                )}
-              </div>
-              <p className="mt-2 font-semibold">{s.label}</p>
-              <p className="text-xs text-muted-foreground mt-1">{s.done ? "Selesai" : "Belum lengkap"}</p>
-            </Card>
-          </Link>
+          <Card key={s.label} className="p-5 h-full">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-muted-foreground">LANGKAH {i + 1}</span>
+              {s.done ? (
+                <CheckCircle2 className="h-5 w-5 text-primary" />
+              ) : (
+                <Clock className="h-5 w-5 text-muted-foreground" />
+              )}
+            </div>
+            <p className="mt-2 font-semibold">{s.label}</p>
+            <p className="text-xs text-muted-foreground mt-1">{s.done ? "Selesai" : "Belum"}</p>
+          </Card>
         ))}
       </div>
 
@@ -90,9 +98,10 @@ export default function SiswaIndex() {
             <StatusBadge status={siswa?.status_verifikasi} />
           </div>
           <dl className="space-y-3 text-sm">
-            <Row label="Nomor Peserta" value={siswa?.nomor_peserta || "-"} />
+            <Row label="Nomor Registrasi" value={siswa?.nomor_registrasi || "-"} mono />
+            <Row label="Nomor Peserta" value={siswa?.nomor_peserta || "-"} mono />
             <Row label="Jenjang" value={siswa?.jenjang ?? "-"} />
-            <Row label="Asal Sekolah" value={siswa?.asal_sekolah || "-"} />
+            <Row label="Tahun Ajaran" value={siswa?.tahun_ajaran_kode || "-"} />
             <Row label="Terdaftar" value={siswa?.created_at ? formatDateTime(siswa.created_at) : "-"} />
           </dl>
           {!siswa && (
@@ -104,20 +113,22 @@ export default function SiswaIndex() {
 
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Pembayaran</h3>
-            <PayBadge status={bayar?.status} />
+            <h3 className="font-semibold">Tagihan Pendaftaran</h3>
+            <PayBadge status={tagihan?.status} />
           </div>
-          {bayar ? (
+          {tagihan ? (
             <dl className="space-y-3 text-sm">
-              <Row label="Nomor VA" value={bayar.nomor_va} mono />
-              <Row label="Biaya" value={formatIDR(bayar.biaya)} />
-              <Row label="Metode" value={bayar.metode ?? "Virtual Account"} />
-              <Row label="Dibayar" value={bayar.tanggal_bayar ? formatDateTime(bayar.tanggal_bayar) : "-"} />
+              <Row label="TRX ID" value={tagihan.trx_id} mono />
+              <Row label="Nomor VA" value={tagihan.nomor_va} mono />
+              <Row label="Nominal" value={formatIDR(tagihan.nominal_tagihan)} />
+              <Row label="Dibayar" value={formatIDR(tagihan.nominal_dibayar)} />
+              <Row label="Metode" value={tagihan.metode ?? "Virtual Account"} />
+              <Row label="Tanggal Bayar" value={tagihan.tanggal_bayar ? formatDateTime(tagihan.tanggal_bayar) : "-"} />
             </dl>
           ) : (
             <div className="text-sm text-muted-foreground">
               <AlertCircle className="h-4 w-4 inline mr-1" />
-              VA akan dibuat otomatis setelah biodata terisi.
+              Tagihan akan dibuat otomatis setelah registrasi tersimpan.
             </div>
           )}
           <Button asChild variant="outline" className="mt-4 w-full">
@@ -150,10 +161,10 @@ function StatusBadge({ status }: { status?: string | null }) {
 
 function PayBadge({ status }: { status?: string | null }) {
   const map: Record<string, { label: string; cls: string }> = {
-    pending: { label: "Menunggu", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-400" },
+    belum_bayar: { label: "Belum Bayar", cls: "bg-destructive/15 text-destructive" },
+    menunggu_verifikasi: { label: "Menunggu Verifikasi", cls: "bg-amber-500/15 text-amber-700 dark:text-amber-400" },
     lunas: { label: "Lunas", cls: "bg-primary/15 text-primary" },
-    gagal: { label: "Gagal", cls: "bg-destructive/15 text-destructive" },
   };
-  const s = map[status ?? "pending"] ?? map.pending;
+  const s = map[status ?? "belum_bayar"] ?? map.belum_bayar;
   return <Badge className={`${s.cls} border-0`}>{s.label}</Badge>;
 }
