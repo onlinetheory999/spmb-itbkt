@@ -15,12 +15,12 @@ export default function AdminIndex() {
     queryFn: async () => {
       const [siswa, bayar, verif, recent] = await Promise.all([
         supabase.from("siswa").select("id, jenjang", { count: "exact" }),
-        supabase.from("pembayaran").select("biaya, status").eq("status", "lunas"),
+        supabase.from("tagihan").select("nominal_dibayar, status").eq("status", "lunas"),
         supabase.from("siswa").select("id", { count: "exact" }).eq("status_verifikasi", "diverifikasi"),
         supabase.from("siswa").select("*").order("created_at", { ascending: false }).limit(5),
       ]);
       const total = siswa.count ?? 0;
-      const totalBayar = (bayar.data ?? []).reduce((s, r) => s + Number(r.biaya ?? 0), 0);
+      const totalBayar = (bayar.data ?? []).reduce((s, r) => s + Number(r.nominal_dibayar ?? 0), 0);
       const terverifikasi = verif.count ?? 0;
       const byJenjang = (siswa.data ?? []).reduce<Record<string, number>>((acc, r) => {
         acc[r.jenjang] = (acc[r.jenjang] ?? 0) + 1;
