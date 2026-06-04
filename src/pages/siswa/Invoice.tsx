@@ -41,23 +41,16 @@ export default function Invoice() {
     },
   });
 
-  if (!tagihan) {
-    return (
-      <Card className="p-10 text-center max-w-xl">
-        <Loader2 className="h-6 w-6 mx-auto animate-spin text-primary" />
-        <p className="mt-3 text-sm text-muted-foreground">Memuat tagihan…</p>
-      </Card>
-    );
-  }
-
   const lunas = tagihan.status === "lunas";
 
   function copyVA() {
+    if (!tagihan) return;
     navigator.clipboard.writeText(tagihan.nomor_va);
     toast.success("Nomor VA disalin");
   }
 
   async function simulasiBayar(full: boolean) {
+    if (!tagihan) return;
     setLoading(true);
     try {
       const nominal = full ? Number(tagihan.nominal_tagihan) : Number(bayar || 0);
