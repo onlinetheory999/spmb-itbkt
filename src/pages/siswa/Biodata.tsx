@@ -8,39 +8,54 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
-import { generateNomorPeserta } from "@/lib/format";
 
 const schema = z.object({
   nama_lengkap: z.string().trim().min(3).max(150),
-  email: z.string().email().max(255),
-  jenjang: z.enum(["SD", "SMP", "SMA"]),
-  jenis_kelamin: z.enum(["L", "P"]),
-  tempat_lahir: z.string().max(100).optional().nullable(),
-  tanggal_lahir: z.string().optional().nullable(),
+  nik: z.string().trim().length(16, "NIK harus 16 digit"),
+  nisn: z.string().trim().max(20).optional().nullable(),
+  agama: z.string().max(30).optional().nullable(),
+  tempat_lahir: z.string().min(2).max(100),
+  tanggal_lahir: z.string().min(1, "Wajib diisi"),
   no_hp: z.string().max(20).optional().nullable(),
-  alamat: z.string().max(500).optional().nullable(),
-  provinsi: z.string().max(100).optional().nullable(),
+  anak_ke: z.coerce.number().int().min(1).optional().nullable(),
+  jumlah_saudara: z.coerce.number().int().min(0).optional().nullable(),
+  alamat: z.string().min(5).max(500),
+  kelurahan: z.string().max(100).optional().nullable(),
+  kecamatan: z.string().max(100).optional().nullable(),
   kabupaten: z.string().max(100).optional().nullable(),
+  provinsi: z.string().max(100).optional().nullable(),
   asal_sekolah: z.string().max(150).optional().nullable(),
   tahun_lulus: z.string().max(4).optional().nullable(),
+  // Orang tua
+  nama_ayah: z.string().min(2).max(150),
+  nik_ayah: z.string().max(20).optional().nullable(),
+  pekerjaan_ayah: z.string().max(100).optional().nullable(),
+  nama_ibu: z.string().min(2).max(150),
+  nik_ibu: z.string().max(20).optional().nullable(),
+  pekerjaan_ibu: z.string().max(100).optional().nullable(),
+  no_hp_ortu: z.string().max(20).optional().nullable(),
+  email_ortu: z.string().email().or(z.literal("")).optional().nullable(),
 });
 
 type FormState = z.infer<typeof schema>;
 
-const empty: FormState = {
-  nama_lengkap: "", email: "", jenjang: "SD", jenis_kelamin: "L",
-  tempat_lahir: "", tanggal_lahir: "", no_hp: "", alamat: "",
-  provinsi: "", kabupaten: "", asal_sekolah: "", tahun_lulus: "",
+const emptyForm: FormState = {
+  nama_lengkap: "", nik: "", nisn: "", agama: "",
+  tempat_lahir: "", tanggal_lahir: "",
+  no_hp: "", anak_ke: null, jumlah_saudara: null,
+  alamat: "", kelurahan: "", kecamatan: "", kabupaten: "", provinsi: "",
+  asal_sekolah: "", tahun_lulus: "",
+  nama_ayah: "", nik_ayah: "", pekerjaan_ayah: "",
+  nama_ibu: "", nik_ibu: "", pekerjaan_ibu: "",
+  no_hp_ortu: "", email_ortu: "",
 };
 
 export default function Biodata() {
   const { user } = useAuth();
   const qc = useQueryClient();
-  const [form, setForm] = useState<FormState>(empty);
+  const [form, setForm] = useState<FormState>(emptyForm);
   const [loading, setLoading] = useState(false);
 
   const { data: siswa } = useQuery({
@@ -53,55 +68,48 @@ export default function Biodata() {
   });
 
   useEffect(() => {
-    if (siswa) {
-      setForm({
-        nama_lengkap: siswa.nama_lengkap ?? "",
-        email: siswa.email ?? user?.email ?? "",
-        jenjang: (siswa.jenjang as any) ?? "SD",
-        jenis_kelamin: ((siswa as any).jenis_kelamin as any) ?? "L",
-        tempat_lahir: siswa.tempat_lahir ?? "",
-        tanggal_lahir: siswa.tanggal_lahir ?? "",
-        no_hp: siswa.no_hp ?? "",
-        alamat: siswa.alamat ?? "",
-        provinsi: siswa.provinsi ?? "",
-        kabupaten: siswa.kabupaten ?? "",
-        asal_sekolah: siswa.asal_sekolah ?? "",
-        tahun_lulus: siswa.tahun_lulus ?? "",
-      });
-    } else if (user?.email && !form.email) {
-      setForm((f) => ({ ...f, email: user.email! }));
-    }
-  }, [siswa, user]);
+    if (!siswa) return;
+    setForm({
+      nama_lengkap: siswa.nama_lengkap ?? "",
+      nik: (siswa as any).nik ?? "",
+      nisn: (siswa as any).nisn ?? "",
+      agama: (siswa as any).agama ?? "",
+      tempat_lahir: siswa.tempat_lahir ?? "",
+      tanggal_lahir: siswa.tanggal_lahir ?? "",
+      no_hp: siswa.no_hp ?? "",
+      anak_ke: (siswa as any).anak_ke ?? null,
+      jumlah_saudara: (siswa as any).jumlah_saudara ?? null,
+      alamat: siswa.alamat ?? "",
+      kelurahan: (siswa as any).kelurahan ?? "",
+      kecamatan: (siswa as any).kecamatan ?? "",
+      kabupaten: siswa.kabupaten ?? "",
+      provinsi: siswa.provinsi ?? "",
+      asal_sekolah: siswa.asal_sekolah ?? "",
+      tahun_lulus: siswa.tahun_lulus ?? "",
+      nama_ayah: (siswa as any).nama_ayah ?? "",
+      nik_ayah: (siswa as any).nik_ayah ?? "",
+      pekerjaan_ayah: (siswa as any).pekerjaan_ayah ?? "",
+      nama_ibu: (siswa as any).nama_ibu ?? "",
+      nik_ibu: (siswa as any).nik_ibu ?? "",
+      pekerjaan_ibu: (siswa as any).pekerjaan_ibu ?? "",
+      no_hp_ortu: (siswa as any).no_hp_ortu ?? "",
+      email_ortu: (siswa as any).email_ortu ?? "",
+    });
+  }, [siswa]);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
     const parsed = schema.safeParse(form);
     if (!parsed.success) return toast.error(parsed.error.issues[0].message);
+    if (!siswa) return toast.error("Akun siswa belum dibuat.");
 
     setLoading(true);
     try {
-      if (siswa) {
-        const { error } = await supabase.from("siswa").update(parsed.data as any).eq("id", siswa.id);
-        if (error) throw error;
-      } else {
-        const nomor_peserta = generateNomorPeserta(parsed.data.jenjang, "2026");
-        const { data: newSiswa, error } = await supabase.from("siswa").insert({
-          ...parsed.data, user_id: user!.id, nomor_peserta,
-        } as any).select().single();
-        if (error) {
-          if (error.message.includes("kuota_penuh:L")) {
-            toast.error("Maaf, kuota untuk siswa laki-laki jenjang ini sudah penuh.");
-          } else if (error.message.includes("kuota_penuh:P")) {
-            toast.error("Maaf, kuota untuk siswa perempuan jenjang ini sudah penuh.");
-          } else {
-            toast.error(error.message);
-          }
-          return;
-        }
-
-        // Tagihan pendaftaran otomatis dibuat oleh trigger DB.
-
-      }
+      const { error } = await supabase
+        .from("siswa")
+        .update(parsed.data as any)
+        .eq("id", siswa.id);
+      if (error) throw error;
       toast.success("Biodata tersimpan");
       qc.invalidateQueries();
     } catch (err: any) {
@@ -112,73 +120,81 @@ export default function Biodata() {
   }
 
   return (
-    <div className="max-w-4xl">
+    <div className="max-w-5xl">
       <div className="mb-6">
         <h2 className="text-2xl font-bold">Biodata Siswa</h2>
-        <p className="text-sm text-muted-foreground">Lengkapi data pribadi dengan benar. Data ini akan diverifikasi.</p>
+        <p className="text-sm text-muted-foreground">
+          Lengkapi seluruh data dengan benar. Data wajib bertanda <span className="text-destructive">*</span>.
+        </p>
       </div>
 
       <form onSubmit={onSubmit}>
-        <Card className="p-6 space-y-6">
+        <Card className="p-6 space-y-7">
+          <Info>
+            <strong>Jenjang:</strong> {siswa?.jenjang} ·{" "}
+            <strong>Jenis Kelamin:</strong> {(siswa as any)?.jenis_kelamin === "P" ? "Perempuan" : "Laki-laki"}
+            <span className="text-muted-foreground"> (diset saat registrasi)</span>
+          </Info>
+
           <Section title="Data Pribadi">
             <Field label="Nama Lengkap *">
               <Input required value={form.nama_lengkap}
                 onChange={(e) => setForm({ ...form, nama_lengkap: e.target.value })} />
             </Field>
-            <Field label="Email *">
-              <Input type="email" required value={form.email}
-                onChange={(e) => setForm({ ...form, email: e.target.value })} />
+            <Field label="NIK (16 digit) *">
+              <Input required inputMode="numeric" maxLength={16} value={form.nik}
+                onChange={(e) => setForm({ ...form, nik: e.target.value.replace(/\D/g, "") })} />
             </Field>
-            <Field label="Tempat Lahir">
-              <Input value={form.tempat_lahir ?? ""}
+            <Field label="NISN">
+              <Input value={form.nisn ?? ""}
+                onChange={(e) => setForm({ ...form, nisn: e.target.value })} />
+            </Field>
+            <Field label="Agama">
+              <Input value={form.agama ?? ""} placeholder="Islam / Kristen / dst."
+                onChange={(e) => setForm({ ...form, agama: e.target.value })} />
+            </Field>
+            <Field label="Tempat Lahir *">
+              <Input required value={form.tempat_lahir}
                 onChange={(e) => setForm({ ...form, tempat_lahir: e.target.value })} />
             </Field>
-            <Field label="Tanggal Lahir">
-              <Input type="date" value={form.tanggal_lahir ?? ""}
+            <Field label="Tanggal Lahir *">
+              <Input type="date" required value={form.tanggal_lahir}
                 onChange={(e) => setForm({ ...form, tanggal_lahir: e.target.value })} />
             </Field>
             <Field label="No. HP / WhatsApp">
               <Input value={form.no_hp ?? ""}
                 onChange={(e) => setForm({ ...form, no_hp: e.target.value })} />
             </Field>
-            <Field label="Jenjang Pendaftaran *">
-              <Select value={form.jenjang} onValueChange={(v) => setForm({ ...form, jenjang: v as any })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="SD">SD</SelectItem>
-                  <SelectItem value="SMP">SMP</SelectItem>
-                  <SelectItem value="SMA">SMA</SelectItem>
-                </SelectContent>
-              </Select>
+            <Field label="Anak Ke">
+              <Input type="number" min={1} value={form.anak_ke ?? ""}
+                onChange={(e) => setForm({ ...form, anak_ke: e.target.value ? Number(e.target.value) : null })} />
             </Field>
-            <Field label="Jenis Kelamin *">
-              <RadioGroup
-                value={form.jenis_kelamin}
-                onValueChange={(v) => setForm({ ...form, jenis_kelamin: v as "L" | "P" })}
-                className="flex gap-4 h-9 items-center"
-              >
-                <label className="flex items-center gap-2 text-sm">
-                  <RadioGroupItem value="L" id="b-l" /> Laki-laki
-                </label>
-                <label className="flex items-center gap-2 text-sm">
-                  <RadioGroupItem value="P" id="b-p" /> Perempuan
-                </label>
-              </RadioGroup>
+            <Field label="Jumlah Saudara">
+              <Input type="number" min={0} value={form.jumlah_saudara ?? ""}
+                onChange={(e) => setForm({ ...form, jumlah_saudara: e.target.value ? Number(e.target.value) : null })} />
             </Field>
           </Section>
 
           <Section title="Alamat">
-            <Field label="Provinsi">
-              <Input value={form.provinsi ?? ""}
-                onChange={(e) => setForm({ ...form, provinsi: e.target.value })} />
+            <Field label="Alamat Lengkap *" full>
+              <Textarea required rows={3} value={form.alamat}
+                onChange={(e) => setForm({ ...form, alamat: e.target.value })} />
             </Field>
-            <Field label="Kabupaten/Kota">
+            <Field label="Kelurahan / Desa">
+              <Input value={form.kelurahan ?? ""}
+                onChange={(e) => setForm({ ...form, kelurahan: e.target.value })} />
+            </Field>
+            <Field label="Kecamatan">
+              <Input value={form.kecamatan ?? ""}
+                onChange={(e) => setForm({ ...form, kecamatan: e.target.value })} />
+            </Field>
+            <Field label="Kabupaten / Kota">
               <Input value={form.kabupaten ?? ""}
                 onChange={(e) => setForm({ ...form, kabupaten: e.target.value })} />
             </Field>
-            <Field label="Alamat Lengkap" full>
-              <Textarea rows={3} value={form.alamat ?? ""}
-                onChange={(e) => setForm({ ...form, alamat: e.target.value })} />
+            <Field label="Provinsi">
+              <Input value={form.provinsi ?? ""}
+                onChange={(e) => setForm({ ...form, provinsi: e.target.value })} />
             </Field>
           </Section>
 
@@ -190,6 +206,41 @@ export default function Biodata() {
             <Field label="Tahun Lulus">
               <Input value={form.tahun_lulus ?? ""} maxLength={4}
                 onChange={(e) => setForm({ ...form, tahun_lulus: e.target.value })} />
+            </Field>
+          </Section>
+
+          <Section title="Data Orang Tua / Wali">
+            <Field label="Nama Ayah *">
+              <Input required value={form.nama_ayah}
+                onChange={(e) => setForm({ ...form, nama_ayah: e.target.value })} />
+            </Field>
+            <Field label="NIK Ayah">
+              <Input maxLength={16} value={form.nik_ayah ?? ""}
+                onChange={(e) => setForm({ ...form, nik_ayah: e.target.value.replace(/\D/g, "") })} />
+            </Field>
+            <Field label="Pekerjaan Ayah">
+              <Input value={form.pekerjaan_ayah ?? ""}
+                onChange={(e) => setForm({ ...form, pekerjaan_ayah: e.target.value })} />
+            </Field>
+            <Field label="Nama Ibu *">
+              <Input required value={form.nama_ibu}
+                onChange={(e) => setForm({ ...form, nama_ibu: e.target.value })} />
+            </Field>
+            <Field label="NIK Ibu">
+              <Input maxLength={16} value={form.nik_ibu ?? ""}
+                onChange={(e) => setForm({ ...form, nik_ibu: e.target.value.replace(/\D/g, "") })} />
+            </Field>
+            <Field label="Pekerjaan Ibu">
+              <Input value={form.pekerjaan_ibu ?? ""}
+                onChange={(e) => setForm({ ...form, pekerjaan_ibu: e.target.value })} />
+            </Field>
+            <Field label="No. HP Orang Tua">
+              <Input value={form.no_hp_ortu ?? ""}
+                onChange={(e) => setForm({ ...form, no_hp_ortu: e.target.value })} />
+            </Field>
+            <Field label="Email Orang Tua">
+              <Input type="email" value={form.email_ortu ?? ""}
+                onChange={(e) => setForm({ ...form, email_ortu: e.target.value })} />
             </Field>
           </Section>
 
@@ -219,5 +270,11 @@ function Field({ label, children, full }: { label: string; children: React.React
       <Label>{label}</Label>
       {children}
     </div>
+  );
+}
+
+function Info({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="rounded-lg border bg-muted/40 px-4 py-2.5 text-sm">{children}</div>
   );
 }
