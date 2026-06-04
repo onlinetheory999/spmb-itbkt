@@ -83,10 +83,24 @@ export default function App() {
             }
           >
             <Route index element={<SiswaIndex />} />
-            <Route path="biodata" element={<SiswaBiodata />} />
+            <Route path="invoice" element={<SiswaInvoice />} />
             <Route path="pembayaran" element={<SiswaPembayaran />} />
-            <Route path="berkas" element={<SiswaBerkas />} />
-            <Route path="kartu" element={<SiswaKartu />} />
+            <Route path="tagihan" element={<SiswaTagihan />} />
+            <Route path="biodata" element={
+              <RequireStep requires={["pembayaran"]}><SiswaBiodata /></RequireStep>
+            } />
+            <Route path="berkas" element={
+              <RequireStep requires={["biodata"]}><SiswaBerkas /></RequireStep>
+            } />
+            <Route path="kartu" element={
+              <RequireStep requires={["verifikasi"]}><SiswaKartu /></RequireStep>
+            } />
+            <Route path="kelulusan" element={
+              <RequireStep requires={["kartu"]}><SiswaKelulusan /></RequireStep>
+            } />
+            <Route path="daftar-ulang" element={
+              <RequireStep requires={["kelulusan"]}><SiswaDaftarUlang /></RequireStep>
+            } />
           </Route>
 
           {/* Admin */}
