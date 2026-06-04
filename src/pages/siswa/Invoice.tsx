@@ -74,6 +74,15 @@ export default function Invoice() {
     }
   }
 
+  if (!tagihan) {
+    return (
+      <Card className="p-10 text-center max-w-xl">
+        <Loader2 className="h-6 w-6 mx-auto animate-spin text-primary" />
+        <p className="mt-3 text-sm text-muted-foreground">Memuat tagihan…</p>
+      </Card>
+    );
+  }
+
   return (
     <div className="max-w-3xl space-y-5">
       <div>
