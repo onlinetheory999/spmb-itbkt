@@ -23,8 +23,13 @@ import SiswaLayout from "@/pages/siswa/SiswaLayout";
 import SiswaIndex from "@/pages/siswa/SiswaIndex";
 import SiswaBiodata from "@/pages/siswa/Biodata";
 import SiswaPembayaran from "@/pages/siswa/Pembayaran";
+import SiswaInvoice from "@/pages/siswa/Invoice";
 import SiswaBerkas from "@/pages/siswa/Berkas";
 import SiswaKartu from "@/pages/siswa/Kartu";
+import SiswaTagihan from "@/pages/siswa/Tagihan";
+import SiswaKelulusan from "@/pages/siswa/Kelulusan";
+import SiswaDaftarUlang from "@/pages/siswa/DaftarUlang";
+import { RequireStep } from "@/components/guards/RequireStep";
 
 // Admin pages
 import AdminLayout from "@/pages/admin/AdminLayout";
