@@ -23,8 +23,13 @@ import SiswaLayout from "@/pages/siswa/SiswaLayout";
 import SiswaIndex from "@/pages/siswa/SiswaIndex";
 import SiswaBiodata from "@/pages/siswa/Biodata";
 import SiswaPembayaran from "@/pages/siswa/Pembayaran";
+import SiswaInvoice from "@/pages/siswa/Invoice";
 import SiswaBerkas from "@/pages/siswa/Berkas";
 import SiswaKartu from "@/pages/siswa/Kartu";
+import SiswaTagihan from "@/pages/siswa/Tagihan";
+import SiswaKelulusan from "@/pages/siswa/Kelulusan";
+import SiswaDaftarUlang from "@/pages/siswa/DaftarUlang";
+import { RequireStep } from "@/components/guards/RequireStep";
 
 // Admin pages
 import AdminLayout from "@/pages/admin/AdminLayout";
@@ -78,10 +83,24 @@ export default function App() {
             }
           >
             <Route index element={<SiswaIndex />} />
-            <Route path="biodata" element={<SiswaBiodata />} />
+            <Route path="invoice" element={<SiswaInvoice />} />
             <Route path="pembayaran" element={<SiswaPembayaran />} />
-            <Route path="berkas" element={<SiswaBerkas />} />
-            <Route path="kartu" element={<SiswaKartu />} />
+            <Route path="tagihan" element={<SiswaTagihan />} />
+            <Route path="biodata" element={
+              <RequireStep requires={["pembayaran"]}><SiswaBiodata /></RequireStep>
+            } />
+            <Route path="berkas" element={
+              <RequireStep requires={["biodata"]}><SiswaBerkas /></RequireStep>
+            } />
+            <Route path="kartu" element={
+              <RequireStep requires={["verifikasi"]}><SiswaKartu /></RequireStep>
+            } />
+            <Route path="kelulusan" element={
+              <RequireStep requires={["kartu"]}><SiswaKelulusan /></RequireStep>
+            } />
+            <Route path="daftar-ulang" element={
+              <RequireStep requires={["kelulusan"]}><SiswaDaftarUlang /></RequireStep>
+            } />
           </Route>
 
           {/* Admin */}
