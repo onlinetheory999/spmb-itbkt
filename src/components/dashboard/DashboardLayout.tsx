@@ -12,7 +12,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { toast } from "sonner";
 import { Outlet } from "react-router-dom";
 
-export type NavItem = { to: string; label: string; icon: React.ComponentType<{ className?: string }> };
+export type NavItem = { to: string; label: string; icon: React.ComponentType<{ className?: string }>; enabled?: boolean };
 
 export function DashboardLayout({
   items, title,
@@ -57,13 +57,24 @@ function AppSidebar({ items, title }: { items: NavItem[]; title: string }) {
             <SidebarMenu>
               {items.map((it) => {
                 const active = pathname === it.to || pathname.startsWith(it.to + "/");
+                const disabled = it.enabled === false;
                 return (
                   <SidebarMenuItem key={it.to}>
                     <SidebarMenuButton asChild isActive={active}
-                      className={active ? "bg-primary/10 text-primary font-medium" : ""}>
-                      <Link to={it.to} className="flex items-center gap-2">
+                      className={
+                        active ? "bg-primary/10 text-primary font-medium"
+                        : disabled ? "opacity-50 pointer-events-none" : ""
+                      }>
+                      <Link to={disabled ? "#" : it.to} className="flex items-center gap-2"
+                        aria-disabled={disabled}
+                        title={disabled ? "Selesaikan tahap sebelumnya" : undefined}>
                         <it.icon className="h-4 w-4 shrink-0" />
-                        {!collapsed && <span>{it.label}</span>}
+                        {!collapsed && (
+                          <span className="flex items-center gap-1.5">
+                            {it.label}
+                            {disabled && <span className="text-[10px]">🔒</span>}
+                          </span>
+                        )}
                       </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
