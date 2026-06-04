@@ -41,7 +41,7 @@ export default function Invoice() {
     },
   });
 
-  const lunas = tagihan.status === "lunas";
+  const lunas = tagihan?.status === "lunas";
 
   function copyVA() {
     if (!tagihan) return;
