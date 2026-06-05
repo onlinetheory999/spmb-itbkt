@@ -109,7 +109,7 @@ function BerkasDetail({ berkas, onChanged }: { berkas: any; onChanged: () => voi
   const [catatan, setCatatan] = useState<string>(berkas.catatan_revisi ?? "");
 
   async function setStatus(dok: string, status: "diverifikasi" | "ditolak" | "menunggu") {
-    const { error } = await supabase.from("upload_berkas").update({ [`status_${dok}`]: status, catatan_revisi: catatan || null }).eq("id", berkas.id);
+    const { error } = await (supabase as any).from("upload_berkas").update({ [`status_${dok}`]: status, catatan_revisi: catatan || null }).eq("id", berkas.id);
     if (error) return toast.error(error.message);
     toast.success("Status diperbarui");
     onChanged();
