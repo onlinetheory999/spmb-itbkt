@@ -41,6 +41,12 @@ import AdminPengumuman from "@/pages/admin/PengumumanAdmin";
 import AdminJadwal from "@/pages/admin/JadwalAdmin";
 import AdminHero from "@/pages/admin/Hero";
 import AdminPengaturan from "@/pages/admin/Pengaturan";
+import AdminTahunAjaran from "@/pages/admin/TahunAjaran";
+import AdminGelombang from "@/pages/admin/Gelombang";
+import AdminBiayaPendaftaran from "@/pages/admin/BiayaPendaftaran";
+import AdminBiayaDaftarUlang from "@/pages/admin/BiayaDaftarUlang";
+import AdminVerifikasiBerkas from "@/pages/admin/VerifikasiBerkas";
+import AdminPengumumanKelulusan from "@/pages/admin/PengumumanKelulusan";
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, refetchOnWindowFocus: false } },
@@ -116,8 +122,14 @@ export default function App() {
           >
             <Route index element={<AdminIndex />} />
             <Route path="siswa" element={<AdminSiswa />} />
+            <Route path="verifikasi-berkas" element={<AdminVerifikasiBerkas />} />
             <Route path="jenjang" element={<AdminJenjang />} />
             <Route path="pembayaran" element={<AdminPembayaran />} />
+            <Route path="kelulusan" element={<AdminPengumumanKelulusan />} />
+            <Route path="tahun-ajaran" element={<AdminTahunAjaran />} />
+            <Route path="gelombang" element={<AdminGelombang />} />
+            <Route path="biaya-pendaftaran" element={<AdminBiayaPendaftaran />} />
+            <Route path="biaya-daftar-ulang" element={<AdminBiayaDaftarUlang />} />
             <Route path="pengumuman" element={<AdminPengumuman />} />
             <Route path="jadwal" element={<AdminJadwal />} />
             <Route path="hero" element={<AdminHero />} />
