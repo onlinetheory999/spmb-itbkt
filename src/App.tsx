@@ -29,6 +29,7 @@ import SiswaKartu from "@/pages/siswa/Kartu";
 import SiswaTagihan from "@/pages/siswa/Tagihan";
 import SiswaKelulusan from "@/pages/siswa/Kelulusan";
 import SiswaDaftarUlang from "@/pages/siswa/DaftarUlang";
+import SiswaGantiPassword from "@/pages/siswa/GantiPassword";
 import { RequireStep } from "@/components/guards/RequireStep";
 
 // Admin pages
@@ -92,6 +93,7 @@ export default function App() {
             <Route path="invoice" element={<SiswaInvoice />} />
             <Route path="pembayaran" element={<SiswaPembayaran />} />
             <Route path="tagihan" element={<SiswaTagihan />} />
+            <Route path="ganti-password" element={<SiswaGantiPassword />} />
             <Route path="biodata" element={
               <RequireStep requires={["pembayaran"]}><SiswaBiodata /></RequireStep>
             } />
