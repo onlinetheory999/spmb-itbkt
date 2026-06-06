@@ -7,6 +7,7 @@ import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/hooks/use-auth";
 import { useSiswaProgress, STEP_LABELS, STEP_ROUTES, StepKey } from "@/hooks/use-siswa-progress";
 import { formatIDR, formatDateTime } from "@/lib/format";
+import { PasswordDefaultBanner } from "@/components/siswa/PasswordDefaultBanner";
 
 const ORDER: StepKey[] = [
   "registrasi", "pembayaran", "biodata", "berkas",
@@ -22,6 +23,8 @@ export default function SiswaIndex() {
 
   return (
     <div className="space-y-6 max-w-6xl">
+      <PasswordDefaultBanner />
+
       {/* Hero */}
       <div className="rounded-2xl bg-gradient-primary p-6 md:p-8 text-primary-foreground shadow-elegant relative overflow-hidden">
         <div className="absolute -top-10 -right-10 h-48 w-48 rounded-full bg-white/10 blur-3xl" />
